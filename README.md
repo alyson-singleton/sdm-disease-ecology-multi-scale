@@ -8,4 +8,4 @@ This github contains the following pieces of __data__:
 * Subsets of the full dataset including presence and background data for each scale and species investigated in this analysis. These datasets have already been thinned and are ready as model input.
 
 This github contains the following pieces of __code__:
-* test
+* Coming soon.
