@@ -3,7 +3,7 @@
 
 This github contains the following pieces of __data__:
 * Expert-collected _Biomphalaria_ snail data set, including coordinates, source, and species. Compiled from the Coleção de Malacologia Médica, Fundação Oswaldo Cruz (CMM-Fiocruz) and the Coordination for Disease Control of the State Health Secretariat of São Paulo (CCD-SP).
-* GBIF _Biomphalaria_ snail data set, including coordinates, source, and species.
+* GBIF _Biomphalaria_ snail data set, including coordinates, source, and species. Collection methods detailed in the manuscript.
 * Full dataset of all presence and background species data, including coordinates, source, species, subregion, and all covariates. Includes all data from the above two datasets.
 * Subsets of the full dataset including presence and background data for each scale and species investigated in this analysis. These datasets have already been thinned and are ready to be given to the modeling code below.
 
