@@ -1,5 +1,5 @@
 ## pROC functions from the NicheToolBox package in R by 
-## Luis Osorio :https://github.com/luismurao/ntbox/blob/master/R/pROC.R
+## Luis Osorio: https://github.com/luismurao/ntbox/blob/master/R/pROC.R
 
 pROC <- function(continuous_mod,test_data,
                  n_iter=1000,E_percent=5,
