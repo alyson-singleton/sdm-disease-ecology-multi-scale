@@ -1,0 +1,1575 @@
+---
+title: "Supplementary Figures and Tables"
+author: "Alyson Singleton"
+date: "`r Sys.Date()`"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+# install packages, load libraries, set themes, knit formatting
+pacman::p_load(tidyverse, dplyr, kableExtra, knitr, sf, raster, terra, spData, tmap, leaflet, ggplot2, spThin, mapdata, rnaturalearth, rnaturalearthdata, brazilmaps, devtools, brazilmaps, mapview, grid, gridExtra, RColorBrewer, geobr, ggpubr, cowplot, showtext)
+
+theme_set(theme_bw())
+knitr::opts_chunk$set(echo = F, results='asis', warning=F, message=F, cache=T,
+                      fig.height=5, fig.width=10)
+
+get_legend<-function(myggplot){
+  tmp <- ggplot_gtable(ggplot_build(myggplot))
+  leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box")
+  legend <- tmp$grobs[[leg]]
+  return(legend)
+}
+
+
+font_add("Arial", "/Library/Fonts/Arial.ttf")
+showtext_auto()
+
+no_axis <- theme(axis.title=element_blank(),
+                 axis.text=element_blank(),
+                 axis.ticks=element_blank(),
+                 panel.grid.major = element_blank())
+
+```
+
+```{r, Table A in S1 Text, eval=T}
+#---------------------------------------------------------------------------------------------------------
+# Supplementary Table S1
+#---------------------------------------------------------------------------------------------------------
+sd.error.high <- function(x){
+  mean(x)+(sd(x)/sqrt(10))
+}
+sd.error.low <- function(x){
+  mean(x)-(sd(x)/sqrt(10))
+}
+
+glab_me_national_baseline_metrics <- as.data.frame(read.csv("~/Desktop/r&r_predictions/glabrata_national_models/maxent_baseline_metrics.csv"))
+apply(glab_me_national_baseline_metrics,2,mean)
+apply(glab_me_national_baseline_metrics,2,sd.error.high)
+apply(glab_me_national_baseline_metrics,2,sd.error.low)
+
+glab_rf_national_baseline_metrics <- read.csv("~/Desktop/r&r_predictions/glabrata_national_models/rf_baseline_metrics.csv")
+apply(glab_rf_national_baseline_metrics,2,mean)
+apply(glab_rf_national_baseline_metrics,2,sd.error.high)
+apply(glab_rf_national_baseline_metrics,2,sd.error.low)
+
+glab_brt_national_baseline_metrics <- read.csv("~/Desktop/r&r_predictions/glabrata_national_models/brt_baseline_metrics.csv")
+apply(glab_brt_national_baseline_metrics,2,mean)
+apply(glab_brt_national_baseline_metrics,2,sd.error.high)
+apply(glab_brt_national_baseline_metrics,2,sd.error.low)
+
+stram_me_national_baseline_metrics <- as.data.frame(read.csv("~/Desktop/r&r_predictions/straminea_national_models/maxent_baseline_metrics.csv"))
+apply(stram_me_national_baseline_metrics,2,mean)
+apply(stram_me_national_baseline_metrics,2,sd.error.high)
+apply(stram_me_national_baseline_metrics,2,sd.error.low)
+
+stram_rf_national_baseline_metrics <- read.csv("~/Desktop/r&r_predictions/straminea_national_models/rf_baseline_metrics.csv")
+apply(stram_rf_national_baseline_metrics,2,mean)
+apply(stram_rf_national_baseline_metrics,2,sd.error.high)
+apply(stram_rf_national_baseline_metrics,2,sd.error.low)
+
+stram_brt_national_baseline_metrics <- read.csv("~/Desktop/r&r_predictions/straminea_national_models/brt_baseline_metrics.csv")
+apply(stram_brt_national_baseline_metrics,2,mean)
+apply(stram_brt_national_baseline_metrics,2,sd.error.high)
+apply(stram_brt_national_baseline_metrics,2,sd.error.low)
+
+tenag_me_national_baseline_metrics <- as.data.frame(read.csv("~/Desktop/r&r_predictions/tenagophila_national_models/maxent_baseline_metrics.csv"))
+apply(tenag_me_national_baseline_metrics,2,mean)
+apply(tenag_me_national_baseline_metrics,2,sd.error.high)
+apply(tenag_me_national_baseline_metrics,2,sd.error.low)
+
+tenag_rf_national_baseline_metrics <- read.csv("~/Desktop/r&r_predictions/tenagophila_national_models/rf_baseline_metrics.csv")
+apply(tenag_rf_national_baseline_metrics,2,mean)
+apply(tenag_rf_national_baseline_metrics,2,sd.error.high)
+apply(tenag_rf_national_baseline_metrics,2,sd.error.low)
+
+tenag_brt_national_baseline_metrics <- read.csv("~/Desktop/r&r_predictions/tenagophila_national_models/brt_baseline_metrics.csv")
+apply(tenag_brt_national_baseline_metrics,2,mean)
+apply(tenag_brt_national_baseline_metrics,2,sd.error.high)
+apply(tenag_brt_national_baseline_metrics,2,sd.error.low)
+```
+
+```{r, Table B in S1 Text, eval=T}
+#---------------------------------------------------------------------------------------------------------
+# Supplementary Table S2
+#---------------------------------------------------------------------------------------------------------
+# ##########################
+# State measures
+# ##########################
+glab_me_national_baseline_metrics <- as.data.frame(read.csv("~/Desktop/r&r_predictions/glabrata_mg_models/maxent_baseline_metrics.csv"))
+apply(glab_me_national_baseline_metrics,2,mean)
+apply(glab_me_national_baseline_metrics,2,sd.error.high)
+apply(glab_me_national_baseline_metrics,2,sd.error.low)
+
+glab_rf_national_baseline_metrics <- read.csv("~/Desktop/r&r_predictions/glabrata_mg_models/rf_baseline_metrics.csv")
+apply(glab_rf_national_baseline_metrics,2,mean)
+apply(glab_rf_national_baseline_metrics,2,sd.error.high)
+apply(glab_rf_national_baseline_metrics,2,sd.error.low)
+
+glab_brt_national_baseline_metrics <- read.csv("~/Desktop/r&r_predictions/glabrata_mg_models/brt_baseline_metrics.csv")
+apply(glab_brt_national_baseline_metrics,2,mean)
+apply(glab_brt_national_baseline_metrics,2,sd.error.high)
+apply(glab_brt_national_baseline_metrics,2,sd.error.low)
+
+stram_me_national_baseline_metrics <- as.data.frame(read.csv("~/Desktop/r&r_predictions/straminea_mg_models/maxent_baseline_metrics.csv"))
+apply(stram_me_national_baseline_metrics,2,mean)
+apply(stram_me_national_baseline_metrics,2,sd.error.high)
+apply(stram_me_national_baseline_metrics,2,sd.error.low)
+
+stram_rf_national_baseline_metrics <- read.csv("~/Desktop/r&r_predictions/straminea_mg_models/rf_baseline_metrics.csv")
+apply(stram_rf_national_baseline_metrics,2,mean)
+apply(stram_rf_national_baseline_metrics,2,sd.error.high)
+apply(stram_rf_national_baseline_metrics,2,sd.error.low)
+
+stram_brt_national_baseline_metrics <- read.csv("~/Desktop/r&r_predictions/straminea_mg_models/brt_baseline_metrics.csv")
+apply(stram_brt_national_baseline_metrics,2,mean)
+apply(stram_brt_national_baseline_metrics,2,sd.error.high)
+apply(stram_brt_national_baseline_metrics,2,sd.error.low)
+
+tenag_me_national_baseline_metrics <- as.data.frame(read.csv("~/Desktop/r&r_predictions/tenagophila_sp_models/maxent_baseline_metrics.csv"))
+apply(tenag_me_national_baseline_metrics,2,mean)
+apply(tenag_me_national_baseline_metrics,2,sd.error.high)
+apply(tenag_me_national_baseline_metrics,2,sd.error.low)
+
+tenag_rf_national_baseline_metrics <- read.csv("~/Desktop/r&r_predictions/tenagophila_sp_models/rf_baseline_metrics.csv")
+apply(tenag_rf_national_baseline_metrics,2,mean)
+apply(tenag_rf_national_baseline_metrics,2,sd.error.high)
+apply(tenag_rf_national_baseline_metrics,2,sd.error.low)
+
+tenag_brt_national_baseline_metrics <- read.csv("~/Desktop/r&r_predictions/tenagophila_sp_models/brt_baseline_metrics.csv")
+apply(tenag_brt_national_baseline_metrics,2,mean)
+apply(tenag_brt_national_baseline_metrics,2,sd.error.high)
+apply(tenag_brt_national_baseline_metrics,2,sd.error.low)
+
+# ##########################
+# National cropped measures
+# ##########################
+
+#build glabrata national subset to minas gerais auc table
+glab_me_national_subregion_metrics <- read.csv("~/Desktop/r&r_predictions/glabrata_national_models/maxent_baseline_metrics_cropped.csv")
+glab_rf_national_subregion_metrics <- read.csv("~/Desktop/r&r_predictions/glabrata_national_models/rf_baseline_metrics_cropped.csv")
+glab_brt_national_subregion_metrics <- read.csv("~/Desktop/r&r_predictions/glabrata_national_models/brt_baseline_metrics_cropped.csv")
+
+apply(glab_me_national_subregion_metrics,2,mean)
+apply(glab_me_national_subregion_metrics,2,sd.error.high)
+apply(glab_me_national_subregion_metrics,2,sd.error.low)
+
+apply(glab_rf_national_subregion_metrics,2,mean)
+apply(glab_rf_national_subregion_metrics,2,sd.error.high)
+apply(glab_rf_national_subregion_metrics,2,sd.error.low)
+
+apply(glab_brt_national_subregion_metrics,2,mean)
+apply(glab_brt_national_subregion_metrics,2,sd.error.high)
+apply(glab_brt_national_subregion_metrics,2,sd.error.low)
+
+stram_me_national_subregion_metrics <- read.csv("~/Desktop/r&r_predictions/straminea_national_models/maxent_baseline_metrics_cropped.csv")
+stram_rf_national_subregion_metrics <- read.csv("~/Desktop/r&r_predictions/straminea_national_models/rf_baseline_metrics_cropped.csv")
+stram_brt_national_subregion_metrics <- read.csv("~/Desktop/r&r_predictions/straminea_national_models/brt_baseline_metrics_cropped.csv")
+
+apply(stram_me_national_subregion_metrics,2,mean)
+apply(stram_me_national_subregion_metrics,2,sd.error.high)
+apply(stram_me_national_subregion_metrics,2,sd.error.low)
+
+apply(stram_rf_national_subregion_metrics,2,mean)
+apply(stram_rf_national_subregion_metrics,2,sd.error.high)
+apply(stram_rf_national_subregion_metrics,2,sd.error.low)
+
+apply(stram_brt_national_subregion_metrics,2,mean)
+apply(stram_brt_national_subregion_metrics,2,sd.error.high)
+apply(stram_brt_national_subregion_metrics,2,sd.error.low)
+
+#build tenagophila national subset to minas gerais auc table
+tenag_me_national_subregion_metrics <- read.csv("~/Desktop/r&r_predictions//tenagophila_national_models/maxent_baseline_metrics_cropped.csv")
+tenag_rf_national_subregion_metrics <- read.csv("~/Desktop/r&r_predictions/tenagophila_national_models/rf_baseline_metrics_cropped.csv")
+tenag_brt_national_subregion_metrics <- read.csv("~/Desktop/r&r_predictions/tenagophila_national_models/brt_baseline_metrics_cropped.csv")
+
+apply(tenag_me_national_subregion_metrics,2,mean)
+apply(tenag_me_national_subregion_metrics,2,sd.error.high)
+apply(tenag_me_national_subregion_metrics,2,sd.error.low)
+
+apply(tenag_rf_national_subregion_metrics,2,mean)
+apply(tenag_rf_national_subregion_metrics,2,sd.error.high)
+apply(tenag_rf_national_subregion_metrics,2,sd.error.low)
+
+apply(tenag_brt_national_subregion_metrics,2,mean)
+apply(tenag_brt_national_subregion_metrics,2,sd.error.high)
+apply(tenag_brt_national_subregion_metrics,2,sd.error.low)
+```
+
+```{r, Figure A in S1 Text, eval=T}
+#---------------------------------------------------------------------------------------------------------
+# Supplemental Figure 1 (covariate maps)
+#---------------------------------------------------------------------------------------------------------
+
+#load data
+env_data_national <- list.files(path="~/Desktop/brazil_schisto_raster_folders/national_reduced_late_feb", pattern="tif", all.files=FALSE, full.names=TRUE,recursive=TRUE)
+e_national <- raster::stack(env_data_national)
+env_data_sp <- list.files(path="~/Desktop/brazil_schisto_raster_folders/sp_late_feb", pattern="tif", all.files=FALSE, full.names=TRUE,recursive=TRUE)
+e_sp <- raster::stack(env_data_sp)
+env_data_mg <- list.files(path="~/Desktop/brazil_schisto_raster_folders/mg_late_feb", pattern="tif", all.files=FALSE, full.names=TRUE,recursive=TRUE)
+e_mg <- raster::stack(env_data_mg)
+
+plot(e_national[[7]])
+
+#plot prep
+min <- 2800#6.85#2800
+max <- 3050#31.85#2800
+zlim <- range(c(min,max))
+breakpoints <- round(c(seq(min, max, (max-min)/8)),0)
+colors2 <- c(RColorBrewer::brewer.pal(9, "Oranges"))[2:9]
+#par(mar = c(0, 0, 0, 0))
+#par(mfrow=c(2,3), mar = c(1,3,2,0))#, mai=c(0.05,0.05,0.05,0.05))
+def.par <- par(no.readonly = TRUE)
+layout(matrix(c(1,2,1,3),ncol=2,byrow=TRUE), widths=c(2,1), 
+       heights=c(2,2))
+layout.show(n=3)
+
+plot(e_national[[2]],# main="A",  
+              main="", #ylab = "B. straminea\n",
+              axes = FALSE, box = FALSE, legend = T,
+              breaks = breakpoints, col = colors2,
+              #xlab="Longitude", ylab="Latitude",
+              cex.main = 2, cex.lab=2, zlim=zlim)
+legend("right",fill=rev(colors2),
+       legend = rev(c("10", "13", "16", "19", "22", "26", "29", "32")))
+#title(ylab = "B. straminea\n", adj=0.5, line=-0.59, font.lab=4, cex.lab=2)
+#title("A",adj=0.01, cex.main=2)
+
+plot(e_mg[[2]],# main="A",  
+              main = "", #ylab = "B. straminea\n",
+              axes = FALSE, box = FALSE, legend = F,
+              breaks = breakpoints, col = colors2,
+              #xlab = "Longitude", ylab = "Latitude",
+              cex.main = 2, cex.lab = 2, zlim = zlim)
+#title(ylab = "B. straminea\n", adj = 0.5, line = -0.59, font.lab = 4, cex.lab = 2)
+#title("B", adj = 0.01, cex.main = 2)
+
+plot(e_sp[[2]],# main="A",  
+               main = "", #ylab = "B. straminea\n",
+               axes = FALSE, box = FALSE, legend = F,
+               breaks = breakpoints, col = colors2,
+               #xlab = "Longitude", ylab = "Latitude",
+               cex.main = 2, cex.lab = 2, zlim = zlim)
+#title(ylab = "B. straminea\n", adj = 0.5, line = -0.59, font.lab = 4, cex.lab = 2)
+#title("C", adj = 0.01, cex.main = 2)
+
+fig1 <- grid.arrange(figS1a, figS1b, figS1c,                            
+                     ncol = 6, nrow = 4, 
+                     #common.legend = TRUE, legend = "bottom",
+                     layout_matrix = rbind(c(1,1,1,1,2,2), c(1,1,1,1,2,2), c(1,1,1,1,3,3), c(1,1,1,1,3,3)))
+fig1
+as_ggplot(fig1) +                                
+  draw_plot_label(label = c("A", "B", "C"), size = 15,
+                  x = c(0.03, 0.55, 0.55), y = c(0.925, 0.925, 0.45)) 
+```
+
+```{r, Figure B in S1 Text (Sensitivity), eval=T}
+#---------------------------------------------------------------------------------------------------------
+# National sensitivity, specificity, pAUC, TSS comparisons
+#---------------------------------------------------------------------------------------------------------
+
+#________________________sensitivity STRAMINEA____________________________________________________
+#build straminea national sensitivity table
+stram_national_models_sensitivity_df <- as.data.frame(cbind(stram_me_national_baseline_metrics$sensitivity, 
+                                                    stram_rf_national_baseline_metrics$sensitivity, 
+                                                    stram_brt_national_baseline_metrics$sensitivity))
+colnames(stram_national_models_sensitivity_df) <- c("MaxEnt", "RF", "BRT")
+stram_national_models_sensitivity_df$n <- sum(!is.na(stram_national_models_sensitivity_df$MaxEnt))
+
+#build straminea sudeste sensitivity table
+stram_sudeste_models_sensitivity_df <- as.data.frame(cbind(stram_me_sudeste_baseline_metrics$sensitivity, 
+                                                   stram_rf_sudeste_baseline_metrics$sensitivity, 
+                                                   stram_brt_sudeste_baseline_metrics$sensitivity))
+colnames(stram_sudeste_models_sensitivity_df) <- c("MaxEnt", "RF", "BRT")
+stram_sudeste_models_sensitivity_df$n <- sum(!is.na(stram_sudeste_models_sensitivity_df$MaxEnt))
+
+#build straminea mg sensitivity table
+stram_mg_models_sensitivity_df <- as.data.frame(cbind(stram_me_mg_baseline_metrics$sensitivity, 
+                                              stram_rf_mg_baseline_metrics$sensitivity, 
+                                              stram_brt_mg_baseline_metrics$sensitivity))
+colnames(stram_mg_models_sensitivity_df) <- c("MaxEnt", "RF", "BRT")
+stram_mg_models_sensitivity_df$n <- sum(!is.na(stram_mg_models_sensitivity_df$MaxEnt))
+
+# Build full plot
+stram_national_models_sensitivity_df$geo_extent <- "National"
+stram_sudeste_models_sensitivity_df$geo_extent <- "Sudeste"
+stram_mg_models_sensitivity_df$geo_extent <- "Minas Gerais"
+
+stram_sensitivity_df <- rbind(stram_national_models_sensitivity_df, stram_sudeste_models_sensitivity_df, stram_mg_models_sensitivity_df)
+stram_sensitivity_df <- stram_sensitivity_df %>% pivot_longer(cols=c('MaxEnt', 'RF', 'BRT'),
+                                              names_to='model',
+                                              values_to='sensitivity')
+stram_sensitivity_df <- as.data.frame(stram_sensitivity_df)
+
+second.smallest.func <- function(x, n=2){
+  sort(x)[n]
+}
+second.largest.func <- function(x, n=2){
+  -sort(-x)[n]
+}
+
+stram_sensitivity_df_summary <- stram_sensitivity_df %>% 
+  group_by(geo_extent, model) %>%
+  summarise(n = n(),
+            mean = mean(sensitivity),
+            second.min = second.smallest.func(sensitivity),
+            second.max = second.largest.func(sensitivity),
+            sd.err.high = mean(sensitivity)+(sd(sensitivity)/sqrt(n)) ,
+            sd.err.low = mean(sensitivity)-(sd(sensitivity)/sqrt(n)))
+stram_sensitivity_df_summary <- distinct(stram_sensitivity_df_summary)
+
+fig.stram.sens <- stram_sensitivity_df_summary %>%
+  mutate(model = factor(model, levels = c("MaxEnt","RF", "BRT"))) %>%
+  mutate(geo_extent = factor(geo_extent, levels = c("National","Sudeste", "Minas Gerais"))) %>%
+  ggplot(aes(model, mean, color=model)) + 
+  geom_errorbar(aes(ymin=sd.err.low,ymax=sd.err.high,color=model),width=0.4,linewidth=0.9) +
+  geom_point(aes(x=model, y=mean,color=model),size=3) +
+  facet_grid(cols = vars(geo_extent)) +
+  labs(color="Model Type") +
+  scale_color_manual(values=c('#73D2DE', '#FFBC42', '#D81159')) + 
+  theme_bw()+
+  theme(plot.title = element_text(hjust=0.5, size=26, face="italic"),
+        plot.subtitle = element_text(hjust=0.5, size=22),
+        axis.title=element_text(size=22),
+        axis.title.y=element_blank(),
+        axis.text.y=element_text(size=18),
+        axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.text = element_text(size=20),
+        legend.text=element_text(size=20),
+        legend.title=element_text(size=20),
+        legend.position = "none",
+        strip.text.x = element_text(size = 14)) + 
+  ggtitle("B. straminea") +
+  xlab("Model Type") + ylab("Sensitivity (Out of Sample)") + ylim(0.3,0.95)
+fig.stram.sens
+
+#________________________ sensitivity TENAGOPHILA________________________________________________
+#build tenagophila national sensitivity table
+tenag_national_models_sensitivity_df <- as.data.frame(cbind(tenag_me_national_baseline_metrics$sensitivity, 
+                                                    tenag_rf_national_baseline_metrics$sensitivity, 
+                                                    tenag_brt_national_baseline_metrics$sensitivity))
+colnames(tenag_national_models_sensitivity_df) <- c("MaxEnt", "RF", "BRT")
+tenag_national_models_sensitivity_df$n <- sum(!is.na(tenag_national_models_sensitivity_df$MaxEnt))
+
+#build tenagophila sudeste sensitivity table
+tenag_sudeste_models_sensitivity_df <- as.data.frame(cbind(tenag_me_sudeste_baseline_metrics$sensitivity, 
+                                                   tenag_rf_sudeste_baseline_metrics$sensitivity, 
+                                                   tenag_brt_sudeste_baseline_metrics$sensitivity))
+colnames(tenag_sudeste_models_sensitivity_df) <- c("MaxEnt", "RF", "BRT")
+tenag_sudeste_models_sensitivity_df$n <- sum(!is.na(tenag_sudeste_models_sensitivity_df$MaxEnt))
+
+#build tenagophila mg sensitivity table
+tenag_mg_models_sensitivity_df <- as.data.frame(cbind(tenag_me_mg_baseline_metrics$sensitivity, 
+                                              tenag_rf_mg_baseline_metrics$sensitivity, 
+                                              tenag_brt_mg_baseline_metrics$sensitivity))
+colnames(tenag_mg_models_sensitivity_df) <- c("MaxEnt", "RF", "BRT")
+tenag_mg_models_sensitivity_df$n <- sum(!is.na(tenag_mg_models_sensitivity_df$MaxEnt))
+
+# Build full plot
+tenag_national_models_sensitivity_df$geo_extent <- "National"
+tenag_sudeste_models_sensitivity_df$geo_extent <- "Sudeste"
+tenag_mg_models_sensitivity_df$geo_extent <- "S?o Paulo"
+
+tenag_sensitivity_df <- rbind(tenag_national_models_sensitivity_df, tenag_sudeste_models_sensitivity_df, tenag_mg_models_sensitivity_df)
+tenag_sensitivity_df <- tenag_sensitivity_df %>% pivot_longer(cols=c('MaxEnt', 'RF', 'BRT'),
+                                              names_to='model',
+                                              values_to='sensitivity')
+tenag_sensitivity_df <- as.data.frame(tenag_sensitivity_df)
+
+tenag_sensitivity_df_summary <- tenag_sensitivity_df %>% 
+  group_by(geo_extent, model) %>%
+  summarise(n = n(),
+            mean = mean(sensitivity,na.rm=T),
+            second.min = second.smallest.func(sensitivity),
+            second.max = second.largest.func(sensitivity),
+            sd.err.high = mean(sensitivity,na.rm=T)+(sd(sensitivity,na.rm=T)/sqrt(n)) ,
+            sd.err.low = mean(sensitivity,na.rm=T)-(sd(sensitivity,na.rm=T)/sqrt(n)))
+tenag_sensitivity_df_summary <- distinct(tenag_sensitivity_df_summary)
+
+fig.tenag.sens <- tenag_sensitivity_df_summary %>%
+  mutate(model = factor(model, levels = c("MaxEnt","RF", "BRT"))) %>%
+  mutate(geo_extent = factor(geo_extent, levels = c("National","Sudeste", "S?o Paulo"))) %>%
+  ggplot(aes(model, mean, color=model)) + 
+  geom_errorbar(aes(ymin=sd.err.low,ymax=sd.err.high,color=model),width=0.4,linewidth=0.9) +
+  geom_point(aes(x=model, y=mean,color=model),size=3) +
+  facet_grid(cols = vars(geo_extent)) +
+  labs(color="Model Type") +
+  scale_color_manual(values=c('#73D2DE', '#FFBC42', '#D81159')) + 
+  theme_bw()+
+  theme(plot.title = element_text(hjust=0.5, size=26, face="italic"),
+        plot.subtitle = element_text(hjust=0.5, size=22),
+        axis.title=element_text(size=22),
+        axis.title.y=element_blank(),
+        axis.text.y=element_text(size=18),
+        axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.text = element_text(size=20),
+        legend.text=element_text(size=20),
+        legend.title=element_text(size=20),
+        legend.position = "bottom",
+        strip.text.x = element_text(size = 14)) + 
+  ggtitle("B. tenagophila") +
+  xlab("Model Type") + ylab("Sensitivity (Out of Sample)") + ylim(0.3,0.95)
+fig.tenag.sens
+legend <- get_legend(fig.tenag.sens)
+fig.tenag.sens <- fig.tenag.sens + theme(legend.position = "none")
+
+#________________________sensitivity glabrata____________________________________________________
+#build glabrata national sensitivity table
+glab_national_models_sensitivity_df <- as.data.frame(cbind(glab_me_national_baseline_metrics$sensitivity, 
+                                                            glab_rf_national_baseline_metrics$sensitivity, 
+                                                            glab_brt_national_baseline_metrics$sensitivity))
+colnames(glab_national_models_sensitivity_df) <- c("MaxEnt", "RF", "BRT")
+glab_national_models_sensitivity_df$n <- sum(!is.na(glab_national_models_sensitivity_df$MaxEnt))
+
+#build glabrata sudeste sensitivity table
+glab_sudeste_models_sensitivity_df <- as.data.frame(cbind(glab_me_sudeste_baseline_metrics$sensitivity, 
+                                                           glab_rf_sudeste_baseline_metrics$sensitivity, 
+                                                           glab_brt_sudeste_baseline_metrics$sensitivity))
+colnames(glab_sudeste_models_sensitivity_df) <- c("MaxEnt", "RF", "BRT")
+glab_sudeste_models_sensitivity_df$n <- sum(!is.na(glab_sudeste_models_sensitivity_df$MaxEnt))
+
+#build glabrata mg sensitivity table
+glab_mg_models_sensitivity_df <- as.data.frame(cbind(glab_me_mg_baseline_metrics$sensitivity, 
+                                                      glab_rf_mg_baseline_metrics$sensitivity, 
+                                                      glab_brt_mg_baseline_metrics$sensitivity))
+colnames(glab_mg_models_sensitivity_df) <- c("MaxEnt", "RF", "BRT")
+glab_mg_models_sensitivity_df$n <- sum(!is.na(glab_mg_models_sensitivity_df$MaxEnt))
+
+# Build full plot
+glab_national_models_sensitivity_df$geo_extent <- "National"
+glab_sudeste_models_sensitivity_df$geo_extent <- "Sudeste"
+glab_mg_models_sensitivity_df$geo_extent <- "Minas Gerais"
+
+glab_sensitivity_df <- rbind(glab_national_models_sensitivity_df, glab_sudeste_models_sensitivity_df, glab_mg_models_sensitivity_df)
+glab_sensitivity_df <- glab_sensitivity_df %>% pivot_longer(cols=c('MaxEnt', 'RF', 'BRT'),
+                                                              names_to='model',
+                                                              values_to='sensitivity')
+glab_sensitivity_df <- as.data.frame(glab_sensitivity_df)
+
+second.smallest.func <- function(x, n=2){
+  sort(x)[n]
+}
+second.largest.func <- function(x, n=2){
+  -sort(-x)[n]
+}
+
+glab_sensitivity_df_summary <- glab_sensitivity_df %>% 
+  group_by(geo_extent, model) %>%
+  summarise(n = n(), 
+            mean = mean(sensitivity,na.rm=T),
+            second.min = second.smallest.func(sensitivity),
+            second.max = second.largest.func(sensitivity),
+            sd.err.high = mean(sensitivity,na.rm=T)+(sd(sensitivity,na.rm=T)/sqrt(n)) ,
+            sd.err.low = mean(sensitivity,na.rm=T)-(sd(sensitivity,na.rm=T)/sqrt(n)))
+glab_sensitivity_df_summary <- distinct(glab_sensitivity_df_summary)
+
+fig.glab.sens <- glab_sensitivity_df_summary %>%
+  mutate(model = factor(model, levels = c("MaxEnt","RF", "BRT"))) %>%
+  mutate(geo_extent = factor(geo_extent, levels = c("National","Sudeste", "Minas Gerais"))) %>%
+  ggplot(aes(model, mean, color=model)) + 
+  geom_errorbar(aes(ymin=sd.err.low,ymax=sd.err.high,color=model),width=0.4,linewidth=0.9) +
+  geom_point(aes(x=model, y=mean,color=model),size=3) +
+  facet_grid(cols = vars(geo_extent)) +
+  labs(color="Model Type") +
+  scale_color_manual(values=c('#73D2DE', '#FFBC42', '#D81159')) + 
+  theme_bw()+
+  theme(plot.title = element_text(hjust=0.5, size=26, face="italic"),
+        plot.subtitle = element_text(hjust=0.5, size=22),
+        axis.title=element_text(size=22),
+        axis.title.y=element_blank(),
+        axis.text.y=element_text(size=18),
+        axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.text = element_text(size=20),
+        legend.text=element_text(size=20),
+        legend.title=element_text(size=20),
+        legend.position = "none",
+        strip.text.x = element_text(size = 14)) + 
+  ggtitle("B. glabrata") +
+  xlab("Model Type") + ylab("Sensitivity (Out of Sample)") + ylim(0.3,0.95)
+fig.glab.sens
+
+#---------------------------------------------------------------------------------------------------------
+# Full Figure 3
+fig.sens <- grid.arrange(fig.glab.sens, fig.tenag.sens, legend,                            
+                     ncol = 2, nrow = 2,
+                     layout_matrix = rbind(c(1,2), c(3,3)),heights=c(7,1))
+
+fig.sens <- as_ggplot(fig.sens) +                                
+  draw_plot_label(label = c("A", "B"), size = 24,
+                  x = c(0.02, 0.51), y = c(0.997, 0.997)) 
+
+annotate_figure(fig.sens, left = textGrob("Sensitivity (out of sample)", rot = 90, vjust = 1, gp = gpar(cex = 1.7)))
+
+#three species
+fig.sens.all <- grid.arrange(fig.glab.sens, fig.stram.sens, fig.tenag.sens, legend,                            
+                             ncol = 3, nrow = 2,
+                             layout_matrix = rbind(c(1,2,3), c(4,4,4)),heights=c(7,1))
+
+fig.sens.all <- as_ggplot(fig.sens.all) +                                
+  draw_plot_label(label = c("A", "B", "C"), size = 24,
+                  x = c(0.01, 0.345, 0.68), y = c(0.997, 0.997, 0.997)) 
+
+fig.sens.all <- annotate_figure(fig.sens.all, left = textGrob("Sensitivity (out of sample)", rot = 90, vjust = 1, gp = gpar(cex = 1.7)))
+fig.sens.all
+ggsave("SFig2a.pdf", plot=fig.sens.all, path="~/Desktop/r&r_figures/", width=14, height=8, units="in", device = "pdf")
+```
+
+```{r, Figure B in S1 Text (Specificity), eval=T}
+#________________________specificity STRAMINEA____________________________________________________
+#build straminea national specificity table
+stram_national_models_specificity_df <- as.data.frame(cbind(stram_me_national_baseline_metrics$specificity, 
+                                                    stram_rf_national_baseline_metrics$specificity, 
+                                                    stram_brt_national_baseline_metrics$specificity))
+colnames(stram_national_models_specificity_df) <- c("MaxEnt", "RF", "BRT")
+stram_national_models_specificity_df$n <- sum(!is.na(stram_national_models_specificity_df$MaxEnt))
+
+#build straminea sudeste specificity table
+stram_sudeste_models_specificity_df <- as.data.frame(cbind(stram_me_sudeste_baseline_metrics$specificity, 
+                                                   stram_rf_sudeste_baseline_metrics$specificity, 
+                                                   stram_brt_sudeste_baseline_metrics$specificity))
+colnames(stram_sudeste_models_specificity_df) <- c("MaxEnt", "RF", "BRT")
+stram_sudeste_models_specificity_df$n <- sum(!is.na(stram_sudeste_models_specificity_df$MaxEnt))
+
+#build straminea mg specificity table
+stram_mg_models_specificity_df <- as.data.frame(cbind(stram_me_mg_baseline_metrics$specificity, 
+                                              stram_rf_mg_baseline_metrics$specificity, 
+                                              stram_brt_mg_baseline_metrics$specificity))
+colnames(stram_mg_models_specificity_df) <- c("MaxEnt", "RF", "BRT")
+stram_mg_models_specificity_df$n <- sum(!is.na(stram_mg_models_specificity_df$MaxEnt))
+
+
+# Build full plot
+stram_national_models_specificity_df$geo_extent <- "National"
+stram_sudeste_models_specificity_df$geo_extent <- "Sudeste"
+stram_mg_models_specificity_df$geo_extent <- "Minas Gerais"
+
+stram_specificity_df <- rbind(stram_national_models_specificity_df, stram_sudeste_models_specificity_df, stram_mg_models_specificity_df)
+stram_specificity_df <- stram_specificity_df %>% pivot_longer(cols=c('MaxEnt', 'RF', 'BRT'),
+                                              names_to='model',
+                                              values_to='specificity')
+stram_specificity_df <- as.data.frame(stram_specificity_df)
+
+stram_specificity_df_summary <- stram_specificity_df %>% 
+  group_by(geo_extent, model) %>%
+  summarise(n = n(),
+            mean = mean(specificity, na.rm=T),
+            second.min = second.smallest.func(specificity),
+            second.max = second.largest.func(specificity),
+            sd.err.high = mean(specificity, na.rm=T)+(sd(specificity, na.rm=T)/sqrt(n)) ,
+            sd.err.low = mean(specificity, na.rm=T)-(sd(specificity, na.rm=T)/sqrt(n)))
+stram_specificity_df_summary <- distinct(stram_specificity_df_summary)
+
+fig.stram.spec <- stram_specificity_df_summary %>%
+  mutate(model = factor(model, levels = c("MaxEnt","RF", "BRT"))) %>%
+  mutate(geo_extent = factor(geo_extent, levels = c("National","Sudeste", "Minas Gerais"))) %>%
+  ggplot(aes(model, mean, color=model)) + 
+  geom_errorbar(aes(ymin=sd.err.low,ymax=sd.err.high,color=model),width=0.4,linewidth=0.9) +
+  geom_point(aes(x=model, y=mean,color=model),size=3) +
+  facet_grid(cols = vars(geo_extent)) +
+  labs(color="Model Type") +
+  scale_color_manual(values=c('#73D2DE', '#FFBC42', '#D81159')) + 
+  theme_bw()+
+  theme(plot.title = element_text(hjust=0.5, size=26, face="italic"),
+        plot.subtitle = element_text(hjust=0.5, size=22),
+        axis.title=element_text(size=22),
+        axis.title.y=element_blank(),
+        axis.text.y=element_text(size=18),
+        axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.text = element_text(size=20),
+        legend.text=element_text(size=20),
+        legend.title=element_text(size=20),
+        legend.position = "none",
+        strip.text.x = element_text(size = 14)) + 
+  ggtitle("B. straminea") +
+  xlab("Model Type") + ylab("Specificity (Out of Sample)") + ylim(0.30,0.9)
+fig.stram.spec
+
+#________________________ specificity TENAGOPHILA________________________________________________
+#build tenagophila national specificity table
+tenag_national_models_specificity_df <- as.data.frame(cbind(tenag_me_national_baseline_metrics$specificity, 
+                                                    tenag_rf_national_baseline_metrics$specificity, 
+                                                    tenag_brt_national_baseline_metrics$specificity))
+colnames(tenag_national_models_specificity_df) <- c("MaxEnt", "RF", "BRT")
+tenag_national_models_specificity_df$n <- sum(!is.na(tenag_national_models_specificity_df$MaxEnt))
+
+#build tenagophila sudeste specificity table
+tenag_sudeste_models_specificity_df <- as.data.frame(cbind(tenag_me_sudeste_baseline_metrics$specificity, 
+                                                   tenag_rf_sudeste_baseline_metrics$specificity, 
+                                                   tenag_brt_sudeste_baseline_metrics$specificity))
+colnames(tenag_sudeste_models_specificity_df) <- c("MaxEnt", "RF", "BRT")
+tenag_sudeste_models_specificity_df$n <- sum(!is.na(tenag_sudeste_models_specificity_df$MaxEnt))
+
+#build tenagophila mg specificity table
+tenag_mg_models_specificity_df <- as.data.frame(cbind(tenag_me_mg_baseline_metrics$specificity, 
+                                              tenag_rf_mg_baseline_metrics$specificity, 
+                                              tenag_brt_mg_baseline_metrics$specificity))
+colnames(tenag_mg_models_specificity_df) <- c("MaxEnt", "RF", "BRT")
+tenag_mg_models_specificity_df$n <- sum(!is.na(tenag_mg_models_specificity_df$MaxEnt))
+
+
+# Build full plot
+tenag_national_models_specificity_df$geo_extent <- "National"
+tenag_sudeste_models_specificity_df$geo_extent <- "Sudeste"
+tenag_mg_models_specificity_df$geo_extent <- "S?o Paulo"
+
+tenag_specificity_df <- rbind(tenag_national_models_specificity_df, tenag_sudeste_models_specificity_df, tenag_mg_models_specificity_df)
+tenag_specificity_df <- tenag_specificity_df %>% pivot_longer(cols=c('MaxEnt', 'RF', 'BRT'),
+                                              names_to='model',
+                                              values_to='specificity')
+tenag_specificity_df <- as.data.frame(tenag_specificity_df)
+
+tenag_specificity_df_summary <- tenag_specificity_df %>% 
+  group_by(geo_extent, model) %>%
+  summarise(n = n(), 
+            mean = mean(specificity,na.rm=T),
+            second.min = second.smallest.func(specificity),
+            second.max = second.largest.func(specificity),
+            sd.err.high = mean(specificity,na.rm=T)+(sd(specificity,na.rm=T)/sqrt(n)) ,
+            sd.err.low = mean(specificity,na.rm=T)-(sd(specificity,na.rm=T)/sqrt(n)))
+tenag_specificity_df_summary <- distinct(tenag_specificity_df_summary)
+
+fig.tenag.spec <- tenag_specificity_df_summary %>%
+  mutate(model = factor(model, levels = c("MaxEnt","RF", "BRT"))) %>%
+  mutate(geo_extent = factor(geo_extent, levels = c("National","Sudeste", "S?o Paulo"))) %>%
+  ggplot(aes(model, mean, color=model)) + 
+  geom_errorbar(aes(ymin=sd.err.low,ymax=sd.err.high,color=model),width=0.4,linewidth=0.9) +
+  geom_point(aes(x=model, y=mean,color=model),size=3) +
+  facet_grid(cols = vars(geo_extent)) +
+  labs(color="Model Type") +
+  scale_color_manual(values=c('#73D2DE', '#FFBC42', '#D81159')) + 
+  theme_bw()+
+  theme(plot.title = element_text(hjust=0.5, size=26, face="italic"),
+        plot.subtitle = element_text(hjust=0.5, size=22),
+        axis.title=element_text(size=22),
+        axis.title.y=element_blank(),
+        axis.text.y=element_text(size=18),
+        axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.text = element_text(size=20),
+        legend.text=element_text(size=20),
+        legend.title=element_text(size=20),
+        legend.position = "bottom",
+        strip.text.x = element_text(size = 14)) + 
+  ggtitle("B. tenagophila") +
+  xlab("Model Type") + ylab("Specificity (Out of Sample)") + ylim(0.30,0.9)
+fig.tenag.spec
+legend <- get_legend(fig.tenag.spec)
+fig.tenag.spec <- fig.tenag.spec + theme(legend.position = "none")
+
+#________________________specificity glabrata____________________________________________________
+#build glabrata national specificity table
+glab_national_models_specificity_df <- as.data.frame(cbind(glab_me_national_baseline_metrics$specificity, 
+                                                            glab_rf_national_baseline_metrics$specificity, 
+                                                            glab_brt_national_baseline_metrics$specificity))
+colnames(glab_national_models_specificity_df) <- c("MaxEnt", "RF", "BRT")
+glab_national_models_specificity_df$n <- sum(!is.na(glab_national_models_specificity_df$MaxEnt))
+
+#build glabrata sudeste specificity table
+glab_sudeste_models_specificity_df <- as.data.frame(cbind(glab_me_sudeste_baseline_metrics$specificity, 
+                                                           glab_rf_sudeste_baseline_metrics$specificity, 
+                                                           glab_brt_sudeste_baseline_metrics$specificity))
+colnames(glab_sudeste_models_specificity_df) <- c("MaxEnt", "RF", "BRT")
+glab_sudeste_models_specificity_df$n <- sum(!is.na(glab_sudeste_models_specificity_df$MaxEnt))
+
+#build glabrata mg specificity table
+glab_mg_models_specificity_df <- as.data.frame(cbind(glab_me_mg_baseline_metrics$specificity, 
+                                                      glab_rf_mg_baseline_metrics$specificity, 
+                                                      glab_brt_mg_baseline_metrics$specificity))
+colnames(glab_mg_models_specificity_df) <- c("MaxEnt", "RF", "BRT")
+glab_mg_models_specificity_df$n <- sum(!is.na(glab_mg_models_specificity_df$MaxEnt))
+
+
+# Build full plot
+glab_national_models_specificity_df$geo_extent <- "National"
+glab_sudeste_models_specificity_df$geo_extent <- "Sudeste"
+glab_mg_models_specificity_df$geo_extent <- "Minas Gerais"
+
+glab_specificity_df <- rbind(glab_national_models_specificity_df, glab_sudeste_models_specificity_df, glab_mg_models_specificity_df)
+glab_specificity_df <- glab_specificity_df %>% pivot_longer(cols=c('MaxEnt', 'RF', 'BRT'),
+                                                              names_to='model',
+                                                              values_to='specificity')
+glab_specificity_df <- as.data.frame(glab_specificity_df)
+
+glab_specificity_df_summary <- glab_specificity_df %>% 
+  group_by(geo_extent, model) %>%
+  summarise(n = n(), 
+            mean = mean(specificity, na.rm=T),
+            second.min = second.smallest.func(specificity),
+            second.max = second.largest.func(specificity),
+            sd.err.high = mean(specificity, na.rm=T)+(sd(specificity, na.rm=T)/sqrt(n)) ,
+            sd.err.low = mean(specificity, na.rm=T)-(sd(specificity, na.rm=T)/sqrt(n)))
+glab_specificity_df_summary <- distinct(glab_specificity_df_summary)
+
+fig.glab.spec <- glab_specificity_df_summary %>%
+  mutate(model = factor(model, levels = c("MaxEnt","RF", "BRT"))) %>%
+  mutate(geo_extent = factor(geo_extent, levels = c("National","Sudeste", "Minas Gerais"))) %>%
+  ggplot(aes(model, mean, color=model)) + 
+  geom_errorbar(aes(ymin=sd.err.low,ymax=sd.err.high,color=model),width=0.4,linewidth=0.9) +
+  geom_point(aes(x=model, y=mean,color=model),size=3) +
+  facet_grid(cols = vars(geo_extent)) +
+  labs(color="Model Type") +
+  scale_color_manual(values=c('#73D2DE', '#FFBC42', '#D81159')) + 
+  theme_bw()+
+  theme(plot.title = element_text(hjust=0.5, size=26, face="italic"),
+        plot.subtitle = element_text(hjust=0.5, size=22),
+        axis.title=element_text(size=22),
+        axis.title.y=element_blank(),
+        axis.text.y=element_text(size=18),
+        axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.text = element_text(size=20),
+        legend.text=element_text(size=20),
+        legend.title=element_text(size=20),
+        legend.position = "none",
+        strip.text.x = element_text(size = 14)) + 
+  ggtitle("B. glabrata") +
+  xlab("Model Type") + ylab("Specificity (Out of Sample)") + ylim(0.30,0.9)
+fig.glab.spec
+
+#____________________________________________________________________________
+# Full Figure 3
+fig.spec <- grid.arrange(fig.glab.spec, fig.tenag.spec, legend,                            
+                     ncol = 2, nrow = 2,
+                     layout_matrix = rbind(c(1,2), c(3,3)),heights=c(7,1))
+
+fig.spec <- as_ggplot(fig.spec) +                                
+  draw_plot_label(label = c("A", "B"), size = 24,
+                  x = c(0.02, 0.51), y = c(0.997, 0.997)) 
+
+annotate_figure(fig.spec, left = textGrob("Specificity (out of sample)", rot = 90, vjust = 1, gp = gpar(cex = 1.7)))
+
+#three species
+fig.spec.all <- grid.arrange(fig.glab.spec, fig.stram.spec, fig.tenag.spec, legend,                            
+                        ncol = 3, nrow = 2,
+                        layout_matrix = rbind(c(1,2,3), c(4,4,4)),heights=c(7,1))
+
+fig.spec.all <- as_ggplot(fig.spec.all) +                                
+  draw_plot_label(label = c("A", "B", "C"), size = 24,
+                  x = c(0.01, 0.345, 0.68), y = c(0.997, 0.997, 0.997)) 
+
+fig.spec.all <- annotate_figure(fig.spec.all, left = textGrob("Specificity (out of sample)", rot = 90, vjust = 1, gp = gpar(cex = 1.7)))
+fig.spec.all
+ggsave("SFig2b.pdf", plot=fig.spec.all, path="~/Desktop/r&r_figures/", width=14, height=8, units="in", device = "pdf")
+```
+
+```{r, Figure B in S1 Text (pAUC Mean), eval=T}
+#________________________pAUC STRAMINEA____________________________________________________
+#build straminea national pAUC table
+stram_national_models_pauc_mean_df <- as.data.frame(cbind(stram_me_national_baseline_metrics$pauc_mean, 
+                                                            stram_rf_national_baseline_metrics$pauc_mean, 
+                                                            stram_brt_national_baseline_metrics$pauc_mean))
+colnames(stram_national_models_pauc_mean_df) <- c("MaxEnt", "RF", "BRT")
+stram_national_models_pauc_mean_df$n <- sum(!is.na(stram_national_models_pauc_mean_df$MaxEnt))
+
+#build straminea sudeste pAUC table
+stram_sudeste_models_pauc_mean_df <- as.data.frame(cbind(stram_me_sudeste_baseline_metrics$pauc_mean, 
+                                                           stram_rf_sudeste_baseline_metrics$pauc_mean, 
+                                                           stram_brt_sudeste_baseline_metrics$pauc_mean))
+colnames(stram_sudeste_models_pauc_mean_df) <- c("MaxEnt", "RF", "BRT")
+stram_sudeste_models_pauc_mean_df$n <- sum(!is.na(stram_sudeste_models_pauc_mean_df$MaxEnt))
+
+#build straminea mg pAUC table
+stram_mg_models_pauc_mean_df <- as.data.frame(cbind(stram_me_mg_baseline_metrics$pauc_mean, 
+                                                      stram_rf_mg_baseline_metrics$pauc_mean, 
+                                                      stram_brt_mg_baseline_metrics$pauc_mean))
+colnames(stram_mg_models_pauc_mean_df) <- c("MaxEnt", "RF", "BRT")
+stram_mg_models_pauc_mean_df$n <- sum(!is.na(stram_mg_models_pauc_mean_df$MaxEnt))
+
+# Build full plot
+stram_national_models_pauc_mean_df$geo_extent <- "National"
+stram_sudeste_models_pauc_mean_df$geo_extent <- "Sudeste"
+stram_mg_models_pauc_mean_df$geo_extent <- "Minas Gerais"
+
+stram_pauc_mean_df <- rbind(stram_national_models_pauc_mean_df, stram_sudeste_models_pauc_mean_df, stram_mg_models_pauc_mean_df)
+stram_pauc_mean_df <- stram_pauc_mean_df %>% pivot_longer(cols=c('MaxEnt', 'RF', 'BRT'),
+                                                              names_to='model',
+                                                              values_to='pauc_mean')
+stram_pauc_mean_df <- as.data.frame(stram_pauc_mean_df)
+
+second.smallest.func <- function(x, n=2){
+  sort(x)[n]
+}
+second.largest.func <- function(x, n=2){
+  -sort(-x)[n]
+}
+
+stram_pauc_mean_df_summary <- stram_pauc_mean_df %>% 
+  group_by(geo_extent, model) %>%
+  summarise(n = n(), 
+            mean = mean(pauc_mean, na.rm=T),
+            second.min = second.smallest.func(pauc_mean),
+            second.max = second.largest.func(pauc_mean),
+            sd.err.high = mean(pauc_mean, na.rm=T)+(sd(pauc_mean, na.rm=T)/sqrt(n)) ,
+            sd.err.low = mean(pauc_mean, na.rm=T)-(sd(pauc_mean, na.rm=T)/sqrt(n)))
+stram_pauc_mean_df_summary <- distinct(stram_pauc_mean_df_summary)
+
+fig.stram.pauc <- stram_pauc_mean_df_summary %>%
+  mutate(model = factor(model, levels = c("MaxEnt","RF", "BRT"))) %>%
+  mutate(geo_extent = factor(geo_extent, levels = c("National","Sudeste", "Minas Gerais"))) %>%
+  ggplot(aes(model, mean, color=model)) + 
+  geom_errorbar(aes(ymin=sd.err.low,ymax=sd.err.high,color=model),width=0.4,linewidth=0.9) +
+  geom_point(aes(x=model, y=mean,color=model),size=3) +
+  facet_grid(cols = vars(geo_extent)) +
+  labs(color="Model Type") +
+  scale_color_manual(values=c('#73D2DE', '#FFBC42', '#D81159')) + 
+  theme_bw()+
+  theme(plot.title = element_text(hjust=0.5, size=26, face="italic"),
+        plot.subtitle = element_text(hjust=0.5, size=22),
+        axis.title=element_text(size=22),
+        axis.title.y=element_blank(),
+        axis.text.y=element_text(size=18),
+        axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.text = element_text(size=20),
+        legend.text=element_text(size=20),
+        legend.title=element_text(size=20),
+        legend.position = "none",
+        strip.text.x = element_text(size = 14)) + 
+  ggtitle("B. straminea") +
+  xlab("Model Type") + ylab("pAUC (Out of Sample)") + ylim(0.35,0.71)
+fig.stram.pauc
+
+#________________________ pauc_mean TENAGOPHILA________________________________________________
+#build tenagophila national pauc_mean table
+tenag_national_models_pauc_mean_df <- as.data.frame(cbind(tenag_me_national_baseline_metrics$pauc_mean, 
+                                                            tenag_rf_national_baseline_metrics$pauc_mean, 
+                                                            tenag_brt_national_baseline_metrics$pauc_mean))
+colnames(tenag_national_models_pauc_mean_df) <- c("MaxEnt", "RF", "BRT")
+tenag_national_models_pauc_mean_df$n <- sum(!is.na(tenag_national_models_pauc_mean_df$MaxEnt))
+
+#build tenagophila sudeste pauc_mean table
+tenag_sudeste_models_pauc_mean_df <- as.data.frame(cbind(tenag_me_sudeste_baseline_metrics$pauc_mean, 
+                                                           tenag_rf_sudeste_baseline_metrics$pauc_mean, 
+                                                           tenag_brt_sudeste_baseline_metrics$pauc_mean))
+colnames(tenag_sudeste_models_pauc_mean_df) <- c("MaxEnt", "RF", "BRT")
+tenag_sudeste_models_pauc_mean_df$n <- sum(!is.na(tenag_sudeste_models_pauc_mean_df$MaxEnt))
+
+#build tenagophila mg pauc_mean table
+tenag_mg_models_pauc_mean_df <- as.data.frame(cbind(tenag_me_mg_baseline_metrics$pauc_mean, 
+                                                      tenag_rf_mg_baseline_metrics$pauc_mean, 
+                                                      tenag_brt_mg_baseline_metrics$pauc_mean))
+colnames(tenag_mg_models_pauc_mean_df) <- c("MaxEnt", "RF", "BRT")
+tenag_mg_models_pauc_mean_df$n <- sum(!is.na(tenag_mg_models_pauc_mean_df$MaxEnt))
+
+# Build full plot
+tenag_national_models_pauc_mean_df$geo_extent <- "National"
+tenag_sudeste_models_pauc_mean_df$geo_extent <- "Sudeste"
+tenag_mg_models_pauc_mean_df$geo_extent <- "S?o Paulo"
+
+tenag_pauc_mean_df <- rbind(tenag_national_models_pauc_mean_df, tenag_sudeste_models_pauc_mean_df, tenag_mg_models_pauc_mean_df)
+tenag_pauc_mean_df <- tenag_pauc_mean_df %>% pivot_longer(cols=c('MaxEnt', 'RF', 'BRT'),
+                                                              names_to='model',
+                                                              values_to='pauc_mean')
+tenag_pauc_mean_df <- as.data.frame(tenag_pauc_mean_df)
+
+tenag_pauc_mean_df_summary <- tenag_pauc_mean_df %>% 
+  group_by(geo_extent, model) %>%
+  summarise(n = n(), 
+            mean = mean(pauc_mean,na.rm=T),
+            second.min = second.smallest.func(pauc_mean),
+            second.max = second.largest.func(pauc_mean),
+            sd.err.high = mean(pauc_mean,na.rm=T)+(sd(pauc_mean,na.rm=T)/sqrt(n)) ,
+            sd.err.low = mean(pauc_mean,na.rm=T)-(sd(pauc_mean,na.rm=T)/sqrt(n)))
+tenag_pauc_mean_df_summary <- distinct(tenag_pauc_mean_df_summary)
+
+fig.tenag.pauc <- tenag_pauc_mean_df_summary %>%
+  mutate(model = factor(model, levels = c("MaxEnt","RF", "BRT"))) %>%
+  mutate(geo_extent = factor(geo_extent, levels = c("National","Sudeste", "S?o Paulo"))) %>%
+  ggplot(aes(model, mean, color=model)) + 
+  geom_errorbar(aes(ymin=sd.err.low,ymax=sd.err.high,color=model),width=0.4,linewidth=0.9) +
+  geom_point(aes(x=model, y=mean,color=model),size=3) +
+  facet_grid(cols = vars(geo_extent)) +
+  labs(color="Model Type") +
+  scale_color_manual(values=c('#73D2DE', '#FFBC42', '#D81159')) + 
+  theme_bw()+
+  theme(plot.title = element_text(hjust=0.5, size=26, face="italic"),
+        plot.subtitle = element_text(hjust=0.5, size=22),
+        axis.title=element_text(size=22),
+        axis.title.y=element_blank(),
+        axis.text.y=element_text(size=18),
+        axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.text = element_text(size=20),
+        legend.text=element_text(size=20),
+        legend.title=element_text(size=20),
+        legend.position = "bottom",
+        strip.text.x = element_text(size = 14)) + 
+  ggtitle("B. tenagophila") +
+  xlab("Model Type") + ylab("pAUC (Out of Sample)") + ylim(0.35,0.71)
+fig.tenag.pauc
+legend <- get_legend(fig.tenag.pauc)
+fig.tenag.pauc <- fig.tenag.pauc + theme(legend.position = "none")
+
+#________________________pauc_mean glabrata____________________________________________________
+#build glabrata national pauc_mean table
+glab_national_models_pauc_mean_df <- as.data.frame(cbind(glab_me_national_baseline_metrics$pauc_mean, 
+                                                           glab_rf_national_baseline_metrics$pauc_mean, 
+                                                           glab_brt_national_baseline_metrics$pauc_mean))
+colnames(glab_national_models_pauc_mean_df) <- c("MaxEnt", "RF", "BRT")
+glab_national_models_pauc_mean_df$n <- sum(!is.na(glab_national_models_pauc_mean_df$MaxEnt))
+
+#build glabrata sudeste pauc_mean table
+glab_sudeste_models_pauc_mean_df <- as.data.frame(cbind(glab_me_sudeste_baseline_metrics$pauc_mean, 
+                                                          glab_rf_sudeste_baseline_metrics$pauc_mean, 
+                                                          glab_brt_sudeste_baseline_metrics$pauc_mean))
+colnames(glab_sudeste_models_pauc_mean_df) <- c("MaxEnt", "RF", "BRT")
+glab_sudeste_models_pauc_mean_df$n <- sum(!is.na(glab_sudeste_models_pauc_mean_df$MaxEnt))
+
+#build glabrata mg pauc_mean table
+glab_mg_models_pauc_mean_df <- as.data.frame(cbind(glab_me_mg_baseline_metrics$pauc_mean, 
+                                                     glab_rf_mg_baseline_metrics$pauc_mean, 
+                                                     glab_brt_mg_baseline_metrics$pauc_mean))
+colnames(glab_mg_models_pauc_mean_df) <- c("MaxEnt", "RF", "BRT")
+glab_mg_models_pauc_mean_df$n <- sum(!is.na(glab_mg_models_pauc_mean_df$MaxEnt))
+
+# Build full plot
+glab_national_models_pauc_mean_df$geo_extent <- "National"
+glab_sudeste_models_pauc_mean_df$geo_extent <- "Sudeste"
+glab_mg_models_pauc_mean_df$geo_extent <- "Minas Gerais"
+
+glab_pauc_mean_df <- rbind(glab_national_models_pauc_mean_df, glab_sudeste_models_pauc_mean_df, glab_mg_models_pauc_mean_df)
+glab_pauc_mean_df <- glab_pauc_mean_df %>% pivot_longer(cols=c('MaxEnt', 'RF', 'BRT'),
+                                                            names_to='model',
+                                                            values_to='pauc_mean')
+glab_pauc_mean_df <- as.data.frame(glab_pauc_mean_df)
+
+second.smallest.func <- function(x, n=2){
+  sort(x)[n]
+}
+second.largest.func <- function(x, n=2){
+  -sort(-x)[n]
+}
+
+glab_pauc_mean_df_summary <- glab_pauc_mean_df %>% 
+  group_by(geo_extent, model) %>%
+  summarise(n = n(), 
+            mean = mean(pauc_mean,na.rm=T),
+            second.min = second.smallest.func(pauc_mean),
+            second.max = second.largest.func(pauc_mean),
+            sd.err.high = mean(pauc_mean,na.rm=T)+(sd(pauc_mean,na.rm=T)/sqrt(n)) ,
+            sd.err.low = mean(pauc_mean,na.rm=T)-(sd(pauc_mean,na.rm=T)/sqrt(n)))
+glab_pauc_mean_df_summary <- distinct(glab_pauc_mean_df_summary)
+
+fig.glab.pauc <- glab_pauc_mean_df_summary %>%
+  mutate(model = factor(model, levels = c("MaxEnt","RF", "BRT"))) %>%
+  mutate(geo_extent = factor(geo_extent, levels = c("National","Sudeste", "Minas Gerais"))) %>%
+  ggplot(aes(model, mean, color=model)) + 
+  geom_errorbar(aes(ymin=sd.err.low,ymax=sd.err.high,color=model),width=0.4,linewidth=0.9) +
+  geom_point(aes(x=model, y=mean,color=model),size=3) +
+  facet_grid(cols = vars(geo_extent)) +
+  labs(color="Model Type") +
+  scale_color_manual(values=c('#73D2DE', '#FFBC42', '#D81159')) + 
+  theme_bw()+
+  theme(plot.title = element_text(hjust=0.5, size=26, face="italic"),
+        plot.subtitle = element_text(hjust=0.5, size=22),
+        axis.title=element_text(size=22),
+        axis.title.y=element_blank(),
+        axis.text.y=element_text(size=18),
+        axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.text = element_text(size=20),
+        legend.text=element_text(size=20),
+        legend.title=element_text(size=20),
+        legend.position = "none",
+        strip.text.x = element_text(size = 14)) + 
+  ggtitle("B. glabrata") +
+  xlab("Model Type") + ylab("pAUC (Out of Sample)") + ylim(0.35,0.71)
+fig.glab.pauc
+
+#---------------------------------------------------------------------------------------------------------
+# Full Figure 3
+fig.pauc <- grid.arrange(fig.glab.pauc, fig.tenag.pauc, legend,                            
+                         ncol = 2, nrow = 2,
+                         layout_matrix = rbind(c(1,2), c(3,3)),heights=c(7,1))
+
+fig.pauc <- as_ggplot(fig.pauc) +                                
+  draw_plot_label(label = c("A", "B"), size = 24,
+                  x = c(0.02, 0.51), y = c(0.997, 0.997)) 
+
+annotate_figure(fig.pauc, left = textGrob("pAUC (out of sample)", rot = 90, vjust = 1, gp = gpar(cex = 1.7)))
+
+#three species
+fig.pauc.all <- grid.arrange(fig.glab.pauc, fig.stram.pauc, fig.tenag.pauc, legend,                            
+                             ncol = 3, nrow = 2,
+                             layout_matrix = rbind(c(1,2,3), c(4,4,4)),heights=c(7,1))
+
+fig.pauc.all <- as_ggplot(fig.pauc.all) +                                
+  draw_plot_label(label = c("A", "B", "C"), size = 24,
+                  x = c(0.01, 0.345, 0.68), y = c(0.997, 0.997, 0.997)) 
+
+fig.pauc.all <- annotate_figure(fig.pauc.all, left = textGrob("pAUC (out of sample)", rot = 90, vjust = 1, gp = gpar(cex = 1.7)))
+fig.pauc.all
+ggsave("SFig2c.pdf", plot=fig.pauc.all, path="~/Desktop/r&r_figures/", width=14, height=8, units="in", device = "pdf")
+```
+
+```{r, Figure B in S1 Text (pAUC Sig), eval=T}
+#________________________pAUC STRAMINEA____________________________________________________
+#build straminea national pAUC table
+stram_national_models_pauc_pval_df <- as.data.frame(cbind(stram_me_national_baseline_metrics$pauc_pval, 
+                                                            stram_rf_national_baseline_metrics$pauc_pval, 
+                                                            stram_brt_national_baseline_metrics$pauc_pval))
+colnames(stram_national_models_pauc_pval_df) <- c("MaxEnt", "RF", "BRT")
+stram_national_models_pauc_pval_df$n <- sum(!is.na(stram_national_models_pauc_pval_df$MaxEnt))
+
+#build straminea sudeste pAUC table
+stram_sudeste_models_pauc_pval_df <- as.data.frame(cbind(stram_me_sudeste_baseline_metrics$pauc_pval, 
+                                                           stram_rf_sudeste_baseline_metrics$pauc_pval, 
+                                                           stram_brt_sudeste_baseline_metrics$pauc_pval))
+colnames(stram_sudeste_models_pauc_pval_df) <- c("MaxEnt", "RF", "BRT")
+stram_sudeste_models_pauc_pval_df$n <- sum(!is.na(stram_sudeste_models_pauc_pval_df$MaxEnt))
+
+#build straminea mg pAUC table
+stram_mg_models_pauc_pval_df <- as.data.frame(cbind(stram_me_mg_baseline_metrics$pauc_pval, 
+                                                      stram_rf_mg_baseline_metrics$pauc_pval, 
+                                                      stram_brt_mg_baseline_metrics$pauc_pval))
+colnames(stram_mg_models_pauc_pval_df) <- c("MaxEnt", "RF", "BRT")
+stram_mg_models_pauc_pval_df$n <- sum(!is.na(stram_mg_models_pauc_pval_df$MaxEnt))
+
+# Build full plot
+stram_national_models_pauc_pval_df$geo_extent <- "National"
+stram_sudeste_models_pauc_pval_df$geo_extent <- "Sudeste"
+stram_mg_models_pauc_pval_df$geo_extent <- "Minas Gerais"
+
+stram_pauc_pval_df <- rbind(stram_national_models_pauc_pval_df, stram_sudeste_models_pauc_pval_df, stram_mg_models_pauc_pval_df)
+stram_pauc_pval_df <- stram_pauc_pval_df %>% pivot_longer(cols=c('MaxEnt', 'RF', 'BRT'),
+                                                              names_to='model',
+                                                              values_to='pauc_pval')
+stram_pauc_pval_df <- as.data.frame(stram_pauc_pval_df)
+
+second.smallest.func <- function(x, n=2){
+  sort(x)[n]
+}
+second.largest.func <- function(x, n=2){
+  -sort(-x)[n]
+}
+
+stram_pauc_pval_df_summary <- stram_pauc_pval_df %>% 
+  group_by(geo_extent, model) %>%
+  summarise(n = n(), 
+            mean = mean(pauc_pval, na.rm=T),
+            median = median(pauc_pval, na.rm=T),
+            second.min = second.smallest.func(pauc_pval),
+            second.max = second.largest.func(pauc_pval),
+            sd.err.high.mean = mean(pauc_pval,na.rm=T)+(sd(pauc_pval,na.rm=T)/sqrt(n)),
+            sd.err.low.mean = mean(pauc_pval,na.rm=T)-(sd(pauc_pval,na.rm=T)/sqrt(n)))
+stram_pauc_pval_df_summary <- distinct(stram_pauc_pval_df_summary)
+
+#________________________ pauc_pval TENAGOPHILA________________________________________________
+#build tenagophila national pauc_pval table
+tenag_national_models_pauc_pval_df <- as.data.frame(cbind(tenag_me_national_baseline_metrics$pauc_pval, 
+                                                            tenag_rf_national_baseline_metrics$pauc_pval, 
+                                                            tenag_brt_national_baseline_metrics$pauc_pval))
+colnames(tenag_national_models_pauc_pval_df) <- c("MaxEnt", "RF", "BRT")
+tenag_national_models_pauc_pval_df$n <- sum(!is.na(tenag_national_models_pauc_pval_df$MaxEnt))
+
+#build tenagophila sudeste pauc_pval table
+tenag_sudeste_models_pauc_pval_df <- as.data.frame(cbind(tenag_me_sudeste_baseline_metrics$pauc_pval, 
+                                                           tenag_rf_sudeste_baseline_metrics$pauc_pval, 
+                                                           tenag_brt_sudeste_baseline_metrics$pauc_pval))
+colnames(tenag_sudeste_models_pauc_pval_df) <- c("MaxEnt", "RF", "BRT")
+tenag_sudeste_models_pauc_pval_df$n <- sum(!is.na(tenag_sudeste_models_pauc_pval_df$MaxEnt))
+
+#build tenagophila mg pauc_pval table
+tenag_mg_models_pauc_pval_df <- as.data.frame(cbind(tenag_me_mg_baseline_metrics$pauc_pval, 
+                                                      tenag_rf_mg_baseline_metrics$pauc_pval, 
+                                                      tenag_brt_mg_baseline_metrics$pauc_pval))
+colnames(tenag_mg_models_pauc_pval_df) <- c("MaxEnt", "RF", "BRT")
+tenag_mg_models_pauc_pval_df$n <- sum(!is.na(tenag_mg_models_pauc_pval_df$MaxEnt))
+
+# Build full plot
+tenag_national_models_pauc_pval_df$geo_extent <- "National"
+tenag_sudeste_models_pauc_pval_df$geo_extent <- "Sudeste"
+tenag_mg_models_pauc_pval_df$geo_extent <- "S?o Paulo"
+
+tenag_pauc_pval_df <- rbind(tenag_national_models_pauc_pval_df, tenag_sudeste_models_pauc_pval_df, tenag_mg_models_pauc_pval_df)
+tenag_pauc_pval_df <- tenag_pauc_pval_df %>% pivot_longer(cols=c('MaxEnt', 'RF', 'BRT'),
+                                                              names_to='model',
+                                                              values_to='pauc_pval')
+tenag_pauc_pval_df <- as.data.frame(tenag_pauc_pval_df)
+
+tenag_pauc_pval_df_summary <- tenag_pauc_pval_df %>% 
+  group_by(geo_extent, model) %>%
+  summarise(n = n(), 
+            mean = mean(pauc_pval,na.rm=T),
+            median = median(pauc_pval, na.rm=T),
+            second.min = second.smallest.func(pauc_pval),
+            second.max = second.largest.func(pauc_pval),
+            sd.err.high.mean = mean(pauc_pval,na.rm=T)+(sd(pauc_pval,na.rm=T)/sqrt(n)),
+            sd.err.low.mean = mean(pauc_pval,na.rm=T)-(sd(pauc_pval,na.rm=T)/sqrt(n)))
+tenag_pauc_pval_df_summary <- distinct(tenag_pauc_pval_df_summary)
+
+#________________________pauc_pval glabrata____________________________________________________
+#build glabrata national pauc_pval table
+glab_national_models_pauc_pval_df <- as.data.frame(cbind(glab_me_national_baseline_metrics$pauc_pval, 
+                                                           glab_rf_national_baseline_metrics$pauc_pval, 
+                                                           glab_brt_national_baseline_metrics$pauc_pval))
+colnames(glab_national_models_pauc_pval_df) <- c("MaxEnt", "RF", "BRT")
+glab_national_models_pauc_pval_df$n <- sum(!is.na(glab_national_models_pauc_pval_df$MaxEnt))
+
+#build glabrata sudeste pauc_pval table
+glab_sudeste_models_pauc_pval_df <- as.data.frame(cbind(glab_me_sudeste_baseline_metrics$pauc_pval, 
+                                                          glab_rf_sudeste_baseline_metrics$pauc_pval, 
+                                                          glab_brt_sudeste_baseline_metrics$pauc_pval))
+colnames(glab_sudeste_models_pauc_pval_df) <- c("MaxEnt", "RF", "BRT")
+glab_sudeste_models_pauc_pval_df$n <- sum(!is.na(glab_sudeste_models_pauc_pval_df$MaxEnt))
+
+#build glabrata mg pauc_pval table
+glab_mg_models_pauc_pval_df <- as.data.frame(cbind(glab_me_mg_baseline_metrics$pauc_pval, 
+                                                     glab_rf_mg_baseline_metrics$pauc_pval, 
+                                                     glab_brt_mg_baseline_metrics$pauc_pval))
+colnames(glab_mg_models_pauc_pval_df) <- c("MaxEnt", "RF", "BRT")
+glab_mg_models_pauc_pval_df$n <- sum(!is.na(glab_mg_models_pauc_pval_df$MaxEnt))
+
+# Build full plot
+glab_national_models_pauc_pval_df$geo_extent <- "National"
+glab_sudeste_models_pauc_pval_df$geo_extent <- "Sudeste"
+glab_mg_models_pauc_pval_df$geo_extent <- "Minas Gerais"
+
+glab_pauc_pval_df <- rbind(glab_national_models_pauc_pval_df, glab_sudeste_models_pauc_pval_df, glab_mg_models_pauc_pval_df)
+glab_pauc_pval_df <- glab_pauc_pval_df %>% pivot_longer(cols=c('MaxEnt', 'RF', 'BRT'),
+                                                            names_to='model',
+                                                            values_to='pauc_pval')
+glab_pauc_pval_df <- as.data.frame(glab_pauc_pval_df)
+
+glab_pauc_pval_df_summary <- glab_pauc_pval_df %>% 
+  group_by(geo_extent, model) %>%
+  summarise(n = n(), 
+            mean = mean(pauc_pval,na.rm=T),
+            median = median(pauc_pval, na.rm=T),
+            second.min = second.smallest.func(pauc_pval),
+            second.max = second.largest.func(pauc_pval),
+            sd.err.high.mean = mean(pauc_pval,na.rm=T)+(sd(pauc_pval,na.rm=T)/sqrt(n)),
+            sd.err.low.mean = mean(pauc_pval,na.rm=T)-(sd(pauc_pval,na.rm=T)/sqrt(n)))
+glab_pauc_pval_df_summary <- distinct(glab_pauc_pval_df_summary)
+
+glab_pauc_pval_df_summary[c(5,6,4),]
+stram_pauc_pval_df_summary[c(5,6,4),]
+tenag_pauc_pval_df_summary[c(2,3,1),]
+```
+
+```{r, Figure B in S1 Text (TSS), eval=T}
+#________________________tss STRAMINEA____________________________________________________
+#build straminea national tss table
+stram_national_models_tss_df <- as.data.frame(cbind(stram_me_national_baseline_metrics$tss, 
+                                                            stram_rf_national_baseline_metrics$tss, 
+                                                            stram_brt_national_baseline_metrics$tss))
+colnames(stram_national_models_tss_df) <- c("MaxEnt", "RF", "BRT")
+stram_national_models_tss_df$n <- sum(!is.na(stram_national_models_tss_df$MaxEnt))
+
+#build straminea sudeste tss table
+stram_sudeste_models_tss_df <- as.data.frame(cbind(stram_me_sudeste_baseline_metrics$tss, 
+                                                           stram_rf_sudeste_baseline_metrics$tss, 
+                                                           stram_brt_sudeste_baseline_metrics$tss))
+colnames(stram_sudeste_models_tss_df) <- c("MaxEnt", "RF", "BRT")
+stram_sudeste_models_tss_df$n <- sum(!is.na(stram_sudeste_models_tss_df$MaxEnt))
+
+#build straminea mg tss table
+stram_mg_models_tss_df <- as.data.frame(cbind(stram_me_mg_baseline_metrics$tss, 
+                                                      stram_rf_mg_baseline_metrics$tss, 
+                                                      stram_brt_mg_baseline_metrics$tss))
+colnames(stram_mg_models_tss_df) <- c("MaxEnt", "RF", "BRT")
+stram_mg_models_tss_df$n <- sum(!is.na(stram_mg_models_tss_df$MaxEnt))
+
+# Build full plot
+stram_national_models_tss_df$geo_extent <- "National"
+stram_sudeste_models_tss_df$geo_extent <- "Sudeste"
+stram_mg_models_tss_df$geo_extent <- "Minas Gerais"
+
+stram_tss_df <- rbind(stram_national_models_tss_df, stram_sudeste_models_tss_df, stram_mg_models_tss_df)
+stram_tss_df <- stram_tss_df %>% pivot_longer(cols=c('MaxEnt', 'RF', 'BRT'),
+                                                              names_to='model',
+                                                              values_to='tss')
+stram_tss_df <- as.data.frame(stram_tss_df)
+
+stram_tss_df_summary <- stram_tss_df %>% 
+  group_by(geo_extent, model) %>%
+  summarise(n = n(), 
+            mean = mean(tss,na.rm=T),
+            second.min = second.smallest.func(tss),
+            second.max = second.largest.func(tss),
+            sd.err.high = mean(tss,na.rm=T)+(sd(tss,na.rm=T)/sqrt(n)) ,
+            sd.err.low = mean(tss,na.rm=T)-(sd(tss,na.rm=T)/sqrt(n)))
+stram_tss_df_summary <- distinct(stram_tss_df_summary)
+
+fig.stram.tss <- stram_tss_df_summary %>%
+  mutate(model = factor(model, levels = c("MaxEnt","RF", "BRT"))) %>%
+  mutate(geo_extent = factor(geo_extent, levels = c("National","Sudeste", "Minas Gerais"))) %>%
+  ggplot(aes(model, mean, color=model)) + 
+  geom_errorbar(aes(ymin=sd.err.low,ymax=sd.err.high,color=model),width=0.4,linewidth=0.9) +
+  geom_point(aes(x=model, y=mean,color=model),size=3) +
+  facet_grid(cols = vars(geo_extent)) +
+  labs(color="Model Type") +
+  scale_color_manual(values=c('#73D2DE', '#FFBC42', '#D81159')) + 
+  theme_bw()+
+  theme(plot.title = element_text(hjust=0.5, size=26, face="italic"),
+        plot.subtitle = element_text(hjust=0.5, size=22),
+        axis.title=element_text(size=22),
+        axis.title.y=element_blank(),
+        axis.text.y=element_text(size=18),
+        axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.text = element_text(size=20),
+        legend.text=element_text(size=20),
+        legend.title=element_text(size=20),
+        legend.position = "none",
+        strip.text.x = element_text(size = 14)) + 
+  ggtitle("B. straminea") +
+  xlab("Model Type") + ylab("TSS (Out of Sample)") + ylim(-0.3,0.75)
+fig.stram.tss
+
+#________________________ tss TENAGOPHILA________________________________________________
+#build tenagophila national tss table
+tenag_national_models_tss_df <- as.data.frame(cbind(tenag_me_national_baseline_metrics$tss, 
+                                                            tenag_rf_national_baseline_metrics$tss, 
+                                                            tenag_brt_national_baseline_metrics$tss))
+colnames(tenag_national_models_tss_df) <- c("MaxEnt", "RF", "BRT")
+tenag_national_models_tss_df$n <- sum(!is.na(tenag_national_models_tss_df$MaxEnt))
+
+#build tenagophila sudeste tss table
+tenag_sudeste_models_tss_df <- as.data.frame(cbind(tenag_me_sudeste_baseline_metrics$tss, 
+                                                           tenag_rf_sudeste_baseline_metrics$tss, 
+                                                           tenag_brt_sudeste_baseline_metrics$tss))
+colnames(tenag_sudeste_models_tss_df) <- c("MaxEnt", "RF", "BRT")
+tenag_sudeste_models_tss_df$n <- sum(!is.na(tenag_sudeste_models_tss_df$MaxEnt))
+
+#build tenagophila mg tss table
+tenag_mg_models_tss_df <- as.data.frame(cbind(tenag_me_mg_baseline_metrics$tss, 
+                                                      tenag_rf_mg_baseline_metrics$tss, 
+                                                      tenag_brt_mg_baseline_metrics$tss))
+colnames(tenag_mg_models_tss_df) <- c("MaxEnt", "RF", "BRT")
+tenag_mg_models_tss_df$n <- sum(!is.na(tenag_mg_models_tss_df$MaxEnt))
+
+# Build full plot
+tenag_national_models_tss_df$geo_extent <- "National"
+tenag_sudeste_models_tss_df$geo_extent <- "Sudeste"
+tenag_mg_models_tss_df$geo_extent <- "S?o Paulo"
+
+tenag_tss_df <- rbind(tenag_national_models_tss_df, tenag_sudeste_models_tss_df, tenag_mg_models_tss_df)
+tenag_tss_df <- tenag_tss_df %>% pivot_longer(cols=c('MaxEnt', 'RF', 'BRT'),
+                                                              names_to='model',
+                                                              values_to='tss')
+tenag_tss_df <- as.data.frame(tenag_tss_df)
+
+tenag_tss_df_summary <- tenag_tss_df %>% 
+  group_by(geo_extent, model) %>%
+  summarise(n = n(), 
+            mean = mean(tss,na.rm=T),
+            second.min = second.smallest.func(tss),
+            second.max = second.largest.func(tss),
+            sd.err.high = mean(tss,na.rm=T)+(sd(tss,na.rm=T)/sqrt(n)) ,
+            sd.err.low = mean(tss,na.rm=T)-(sd(tss,na.rm=T)/sqrt(n)))
+tenag_tss_df_summary <- distinct(tenag_tss_df_summary)
+
+fig.tenag.tss <- tenag_tss_df_summary %>%
+  mutate(model = factor(model, levels = c("MaxEnt","RF", "BRT"))) %>%
+  mutate(geo_extent = factor(geo_extent, levels = c("National","Sudeste", "S?o Paulo"))) %>%
+  ggplot(aes(model, mean, color=model)) + 
+  geom_errorbar(aes(ymin=sd.err.low,ymax=sd.err.high,color=model),width=0.4,linewidth=0.9) +
+  geom_point(aes(x=model, y=mean,color=model),size=3) +
+  facet_grid(cols = vars(geo_extent)) +
+  labs(color="Model Type") +
+  scale_color_manual(values=c('#73D2DE', '#FFBC42', '#D81159')) + 
+  theme_bw()+
+  theme(plot.title = element_text(hjust=0.5, size=26, face="italic"),
+        plot.subtitle = element_text(hjust=0.5, size=22),
+        axis.title=element_text(size=22),
+        axis.title.y=element_blank(),
+        axis.text.y=element_text(size=18),
+        axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.text = element_text(size=20),
+        legend.text=element_text(size=20),
+        legend.title=element_text(size=20),
+        legend.position = "bottom",
+        strip.text.x = element_text(size = 14)) + 
+  ggtitle("B. tenagophila") +
+  xlab("Model Type") + ylab("TSS (Out of Sample)") + ylim(-0.3,0.75)
+fig.tenag.tss
+legend <- get_legend(fig.tenag.tss)
+fig.tenag.tss <- fig.tenag.tss + theme(legend.position = "none")
+
+#________________________tss glabrata____________________________________________________
+#build glabrata national tss table
+glab_national_models_tss_df <- as.data.frame(cbind(glab_me_national_baseline_metrics$tss, 
+                                                    glab_rf_national_baseline_metrics$tss, 
+                                                    glab_brt_national_baseline_metrics$tss))
+colnames(glab_national_models_tss_df) <- c("MaxEnt", "RF", "BRT")
+glab_national_models_tss_df$n <- sum(!is.na(glab_national_models_tss_df$MaxEnt))
+
+#build glabrata sudeste tss table
+glab_sudeste_models_tss_df <- as.data.frame(cbind(glab_me_sudeste_baseline_metrics$tss, 
+                                                   glab_rf_sudeste_baseline_metrics$tss, 
+                                                   glab_brt_sudeste_baseline_metrics$tss))
+colnames(glab_sudeste_models_tss_df) <- c("MaxEnt", "RF", "BRT")
+glab_sudeste_models_tss_df$n <- sum(!is.na(glab_sudeste_models_tss_df$MaxEnt))
+
+#build glabrata mg tss table
+glab_mg_models_tss_df <- as.data.frame(cbind(glab_me_mg_baseline_metrics$tss, 
+                                              glab_rf_mg_baseline_metrics$tss, 
+                                              glab_brt_mg_baseline_metrics$tss))
+colnames(glab_mg_models_tss_df) <- c("MaxEnt", "RF", "BRT")
+glab_mg_models_tss_df$n <- sum(!is.na(glab_mg_models_tss_df$MaxEnt))
+
+# Build full plot
+glab_national_models_tss_df$geo_extent <- "National"
+glab_sudeste_models_tss_df$geo_extent <- "Sudeste"
+glab_mg_models_tss_df$geo_extent <- "Minas Gerais"
+
+glab_tss_df <- rbind(glab_national_models_tss_df, glab_sudeste_models_tss_df, glab_mg_models_tss_df)
+glab_tss_df <- glab_tss_df %>% pivot_longer(cols=c('MaxEnt', 'RF', 'BRT'),
+                                              names_to='model',
+                                              values_to='tss')
+glab_tss_df <- as.data.frame(glab_tss_df)
+
+glab_tss_df_summary <- glab_tss_df %>% 
+  group_by(geo_extent, model) %>%
+  summarise(n = n(), 
+            mean = mean(tss,na.rm=T),
+            second.min = second.smallest.func(tss),
+            second.max = second.largest.func(tss),
+            sd.err.high = mean(tss,na.rm=T)+(sd(tss,na.rm=T)/sqrt(n)) ,
+            sd.err.low = mean(tss,na.rm=T)-(sd(tss,na.rm=T)/sqrt(n)))
+glab_tss_df_summary <- distinct(glab_tss_df_summary)
+
+fig.glab.tss <- glab_tss_df_summary %>%
+  mutate(model = factor(model, levels = c("MaxEnt","RF", "BRT"))) %>%
+  mutate(geo_extent = factor(geo_extent, levels = c("National","Sudeste", "Minas Gerais"))) %>%
+  ggplot(aes(model, mean, color=model)) + 
+  geom_errorbar(aes(ymin=sd.err.low,ymax=sd.err.high,color=model),width=0.4,linewidth=0.9) +
+  geom_point(aes(x=model, y=mean,color=model),size=3) +
+  facet_grid(cols = vars(geo_extent)) +
+  labs(color="Model Type") +
+  scale_color_manual(values=c('#73D2DE', '#FFBC42', '#D81159')) + 
+  theme_bw()+
+  theme(plot.title = element_text(hjust=0.5, size=26, face="italic"),
+        plot.subtitle = element_text(hjust=0.5, size=22),
+        axis.title=element_text(size=22),
+        axis.title.y=element_blank(),
+        axis.text.y=element_text(size=18),
+        axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.text = element_text(size=20),
+        legend.text=element_text(size=20),
+        legend.title=element_text(size=20),
+        legend.position = "none",
+        strip.text.x = element_text(size = 14)) + 
+  ggtitle("B. glabrata") +
+  xlab("Model Type") + ylab("TSS (Out of Sample)") + ylim(-0.3,0.75)
+fig.glab.tss
+
+#---------------------------------------------------------------------------------------------------------
+# Full Figure 3
+fig.tss <- grid.arrange(fig.glab.tss, fig.tenag.tss, legend,                            
+                         ncol = 2, nrow = 2,
+                         layout_matrix = rbind(c(1,2), c(3,3)),heights=c(7,1))
+
+fig.tss <- as_ggplot(fig.tss) +                                
+  draw_plot_label(label = c("A", "B"), size = 24,
+                  x = c(0.02, 0.51), y = c(0.997, 0.997)) 
+
+annotate_figure(fig.tss, left = textGrob("TSS (out of sample)", rot = 90, vjust = 1, gp = gpar(cex = 1.7)))
+
+#three species
+fig.tss.all <- grid.arrange(fig.glab.tss, fig.stram.tss, fig.tenag.tss, legend,                            
+                             ncol = 3, nrow = 2,
+                             layout_matrix = rbind(c(1,2,3), c(4,4,4)),heights=c(7,1))
+
+fig.tss.all <- as_ggplot(fig.tss.all) +                                
+  draw_plot_label(label = c("A", "B", "C"), size = 24,
+                  x = c(0.01, 0.345, 0.68), y = c(0.997, 0.997, 0.997)) 
+
+fig.tss.all <- annotate_figure(fig.tss.all, left = textGrob("TSS (out of sample)", rot = 90, vjust = 1, gp = gpar(cex = 1.7)))
+fig.tss.all
+ggsave("SFig2d.pdf", plot=fig.tss.all, path="~/Desktop/r&r_figures/", width=14, height=8, units="in", device = "pdf")
+```
+
+```{r, Raster Cropping, eval=T}
+# crop all national model iterations
+### mg shapefile
+geo_extent_shp <- read_sf("~/Desktop/doctorate/ch1 brazil schisto/brazil_shapefiles/BR_Mesorregioes_2021/BR_Mesorregioes_2021.shp")
+subregions <- geo_extent_shp[which(geo_extent_shp$SIGLA=="MG"),] #mesoregion as subregion
+subregions$geometry <- st_transform(subregions$geometry, 4326)
+geo_extent_shp <- st_union(geo_extent_shp[which(geo_extent_shp$SIGLA=="MG"),])
+geo_extent <- st_as_sf(geo_extent_shp) 
+geo_extent$x <- st_transform(geo_extent$x, 4326)
+mg_shapefile <- geo_extent
+
+### sp shapefile
+geo_extent_shp <- read_sf("~/Desktop/doctorate/ch1 brazil schisto/brazil_shapefiles/BR_Mesorregioes_2021/BR_Mesorregioes_2021.shp")
+subregions <- geo_extent_shp[which(geo_extent_shp$SIGLA=="SP"),] #mesoregion as subregion
+subregions$geometry <- st_transform(subregions$geometry, 4326)
+geo_extent_shp <- st_union(geo_extent_shp[which(geo_extent_shp$SIGLA=="SP"),])
+geo_extent <- st_as_sf(geo_extent_shp) 
+geo_extent$x <- st_transform(geo_extent$x, 4326)
+sp_shapefile <- geo_extent
+
+cropping_function <- function(prediction_rasters_dir, model_type, out_dir, cropping_shapefile){
+  prediction_rasters_dir_prediction_rasters <- paste(prediction_rasters_dir,"/prediction_rasters",sep="")
+  prediction_rasters <- list.files(path=prediction_rasters_dir_prediction_rasters, pattern=model_type, all.files=FALSE, full.names=TRUE,recursive=TRUE)
+  prediction_rasters <- prediction_rasters[2:11] #throw out mean raster
+  for(i in 1:10){
+    masked <- mask(x = raster(prediction_rasters[i]), mask = cropping_shapefile)
+    raster_cropped <- crop(masked, cropping_shapefile)
+    out_name <- paste(prediction_rasters_dir,'/cropped_rasters/',model_type,"_cropped",i,sep="")
+    writeRaster(raster_cropped, filename=out_name, format="GTiff",options=c("INTERLEAVE=BAND","COMPRESS=LZW"), overwrite=TRUE)
+  }
+}
+
+folders <- list.dirs("~/Desktop/r&r_predictions")[-1]
+folders <- folders[c(4,11)]
+folders
+model_types <- c("rf", "brt", "maxent")
+
+for(i in 1:length(folders)){
+  for(k in 1:length(model_types)){
+    extent <- word(basename(folders[i]), 2, sep = "_")
+    cropping_function(folders[i], model_types[k], "~/Desktop/r&r_figures", mg_shapefile)
+    print(paste(model_types[k],"done",sep=" "))
+  }
+  print(paste("Folder",i,"done"))
+}
+```
+
+```{r, Figure E in S1 Text, eval=T}
+#---------------------------------------------------------------------------------------------------------
+# Figure 6 v2: GBIF v expert-collected data suite of maps for Sao Paulo
+# ALL RANDOMLY REDUCED TO 115 occurrence points
+#---------------------------------------------------------------------------------------------------------
+pdf("~/Desktop/r&r_figures/FigE.pdf", width=12, height=9)
+zlim <- range(c(0,0.4))
+breakpoints <- c(seq(0, 0.4, 0.125))
+colors2 <- c(RColorBrewer::brewer.pal(9, "BuPu"))[2:9]
+
+par(mar = c(0, 0, 0, 0))
+par(mfrow=c(3,3), mar = c(1,3,2,0))
+
+str_name <-'~/Desktop/r&r_predictions/tenagophila_sp_expert_limited_models/prediction_rasters/maxent_mean.tif'
+me_pred_raster1 <- brick(str_name)
+plot(me_pred_raster1[[c(1)]],  
+     main="Expert Collected",
+     axes = FALSE, box = FALSE, legend=FALSE,
+     breaks = c(seq(me_pred_raster1@data@min, me_pred_raster1@data@max, (me_pred_raster1@data@max-me_pred_raster1@data@min)/8)), col = colors2,
+     cex.main = 2, cex.lab=2, zlim=range(c(me_pred_raster1@data@min,me_pred_raster1@data@max))
+)
+title(ylab = "Maximum Entropy\n", adj=0.5, line=-0.59, cex.lab=1.8)
+title("A",adj=0.01, cex.main=1.8)
+
+str_name <-'~/Desktop/r&r_predictions/tenagophila_sp_gbif_models/prediction_rasters/maxent_mean.tif'
+me_pred_raster2 <- brick(str_name)
+plot(me_pred_raster2[[c(1)]],  
+     main="Public GBIF",
+     axes = FALSE, box = FALSE, legend=FALSE,
+     breaks = c(seq(me_pred_raster2@data@min, me_pred_raster2@data@max, (me_pred_raster2@data@max-me_pred_raster2@data@min)/8)), col = colors2,
+     cex.main = 2, cex.lab=2, zlim=range(c(me_pred_raster2@data@min,me_pred_raster2@data@max))
+)
+title("B",adj=0.01, cex.main=1.8)
+
+str_name <-'~/Desktop/r&r_predictions/tenagophila_sp_limited_models/prediction_rasters/maxent_mean.tif'
+me_pred_raster3 <- brick(str_name)
+plot(me_pred_raster3[[c(1)]],  
+     main="Combined",
+     axes = FALSE, box = FALSE, legend=FALSE,
+     breaks = c(seq(me_pred_raster3@data@min, me_pred_raster3@data@max, (me_pred_raster3@data@max-me_pred_raster3@data@min)/8)), col = colors2,
+     cex.main = 2, cex.lab=2, zlim=range(c(me_pred_raster3@data@min,me_pred_raster3@data@max))
+)
+title("C",adj=0.01, cex.main=1.8)
+
+str_name <-'~/Desktop/r&r_predictions/tenagophila_sp_expert_limited_models/prediction_rasters/rf_mean.tif'
+rf_pred_raster1 <- brick(str_name)
+raster::plot(rf_pred_raster1[[c(1)]],  
+             axes = FALSE, box = FALSE, legend=FALSE,
+             breaks = c(seq(rf_pred_raster1@data@min, rf_pred_raster1@data@max, (rf_pred_raster1@data@max-rf_pred_raster1@data@min)/8)), col = colors2,
+             cex.main = 2, cex.lab=2, zlim=range(c(rf_pred_raster1@data@min,rf_pred_raster1@data@max))
+)
+title(ylab = "Random Forest\n", adj=0.5, line=-0.59, cex.lab=1.8)
+title("D",adj=0.01, cex.main=1.8)
+
+str_name <-'~/Desktop/r&r_predictions/tenagophila_sp_gbif_models/prediction_rasters/rf_mean.tif'
+rf_pred_raster2 <- brick(str_name)
+plot(rf_pred_raster2[[c(1)]],
+     axes = FALSE, box = FALSE, legend=FALSE,
+     breaks = c(seq(rf_pred_raster2@data@min, rf_pred_raster2@data@max, (rf_pred_raster2@data@max-rf_pred_raster2@data@min)/8)), col = colors2,
+     cex.main = 2, cex.lab=2, zlim=range(c(rf_pred_raster2@data@min,rf_pred_raster2@data@max))
+)
+title("E",adj=0.01, cex.main=1.8)
+
+str_name <-'~/Desktop/r&r_predictions/tenagophila_sp_limited_models/prediction_rasters/rf_mean.tif'
+rf_pred_raster3 <- brick(str_name)
+plot(rf_pred_raster3[[c(1)]],
+     axes = FALSE, box = FALSE, legend=FALSE,
+     breaks = c(seq(rf_pred_raster3@data@min, rf_pred_raster3@data@max, (rf_pred_raster3@data@max-rf_pred_raster3@data@min)/8)), col = colors2,
+     cex.main = 2, cex.lab=2, zlim=range(c(rf_pred_raster3@data@min,rf_pred_raster3@data@max))
+)
+title("F",adj=0.01, cex.main=1.8)
+
+str_name <-'~/Desktop/r&r_predictions/tenagophila_sp_expert_limited_models/prediction_rasters/brt_mean.tif'
+brt_pred_raster1 <- brick(str_name)
+plot(brt_pred_raster1[[c(1)]],  
+             axes = FALSE, box = FALSE, legend=FALSE,
+             breaks = c(seq(brt_pred_raster1@data@min, brt_pred_raster1@data@max, (brt_pred_raster1@data@max-brt_pred_raster1@data@min)/8)), col = colors2,
+             cex.main = 2, cex.lab=2, zlim=range(c(brt_pred_raster1@data@min,brt_pred_raster1@data@max))
+)
+title(ylab = "Boosted Regression Tree\n", adj=0.5, line=-0.59, cex.lab=1.8)
+title("G",adj=0.01, cex.main=1.8)
+
+str_name <-'~/Desktop/r&r_predictions/tenagophila_sp_gbif_models/prediction_rasters/brt_mean.tif'
+brt_pred_raster2 <- brick(str_name)
+plot(brt_pred_raster2[[c(1)]],
+     axes = FALSE, box = FALSE, legend=FALSE,
+     breaks = c(seq(brt_pred_raster2@data@min, brt_pred_raster2@data@max, (brt_pred_raster2@data@max-brt_pred_raster2@data@min)/8)), col = colors2,
+     cex.main = 2, cex.lab=2, zlim=range(c(brt_pred_raster2@data@min,brt_pred_raster2@data@max))
+)
+title("H",adj=0.01, cex.main=1.8)
+
+str_name <-'~/Desktop/r&r_predictions/tenagophila_sp_limited_models/prediction_rasters/brt_mean.tif'
+brt_pred_raster3 <- brick(str_name)
+plot(brt_pred_raster3[[c(1)]],
+     axes = FALSE, box = FALSE, legend=FALSE,
+     breaks = c(seq(brt_pred_raster3@data@min, brt_pred_raster3@data@max, (brt_pred_raster3@data@max-brt_pred_raster3@data@min)/8)), col = colors2,
+     cex.main = 2, cex.lab=2, zlim=range(c(brt_pred_raster3@data@min,brt_pred_raster3@data@max))
+)
+title("I",adj=0.01, cex.main=1.8)
+dev.off()
+```
+
+```{r, Expert v GBIF AUC in text calc for Fig E, eval=T}
+#---------------------------------------------------------------------------------------------------------
+# Expert v GBIF specificity Calculations for in text description (LIMITED MODELS)
+#---------------------------------------------------------------------------------------------------------
+
+tenag_me_sp_expert_baseline_metrics <- read.csv("~/Desktop/r&r_model_runs/tenagophila_sp_expert_limited_models/maxent_baseline_metrics.csv")
+tenag_rf_sp_expert_baseline_metrics <- read.csv("~/Desktop/r&r_model_runs/tenagophila_sp_expert_limited_models/rf_baseline_metrics.csv")
+tenag_brt_sp_expert_baseline_metrics <- read.csv("~/Desktop/r&r_model_runs/tenagophila_sp_expert_limited_models/brt_baseline_metrics.csv")
+tenag_sp_expert_models_auc_df <- c(tenag_me_sp_expert_baseline_metrics$auc, 
+                                   tenag_rf_sp_expert_baseline_metrics$auc, 
+                                   tenag_brt_sp_expert_baseline_metrics$auc)
+mean(tenag_sp_expert_models_auc_df, na.rm = T)
+mean(tenag_sp_expert_models_auc_df)+(sd(tenag_sp_expert_models_auc_df)/sqrt(length(tenag_sp_expert_models_auc_df)))
+mean(tenag_sp_expert_models_auc_df)-(sd(tenag_sp_expert_models_auc_df)/sqrt(length(tenag_sp_expert_models_auc_df)))
+
+tenag_me_sp_gbif_baseline_metrics <- read.csv("~/Desktop/r&r_model_runs/tenagophila_sp_gbif_models/maxent_baseline_metrics.csv")
+tenag_rf_sp_gbif_baseline_metrics <- read.csv("~/Desktop/r&r_model_runs/tenagophila_sp_gbif_models/rf_baseline_metrics.csv")
+tenag_brt_sp_gbif_baseline_metrics <- read.csv("~/Desktop/r&r_model_runs/tenagophila_sp_gbif_models/brt_baseline_metrics.csv")
+tenag_sp_gbif_models_auc_df <- c(tenag_me_sp_gbif_baseline_metrics$auc, 
+                                 tenag_rf_sp_gbif_baseline_metrics$auc, 
+                                 tenag_brt_sp_gbif_baseline_metrics$auc)
+mean(tenag_sp_gbif_models_auc_df, na.rm = T)
+mean(tenag_sp_gbif_models_auc_df)+(sd(tenag_sp_gbif_models_auc_df)/sqrt(length(tenag_sp_gbif_models_auc_df)))
+mean(tenag_sp_gbif_models_auc_df)-(sd(tenag_sp_gbif_models_auc_df)/sqrt(length(tenag_sp_gbif_models_auc_df)))
+
+tenag_me_sp_both_baseline_metrics <- read.csv("~/Desktop/r&r_model_runs/tenagophila_sp_limited_models/maxent_baseline_metrics.csv")
+tenag_rf_sp_both_baseline_metrics <- read.csv("~/Desktop/r&r_model_runs/tenagophila_sp_limited_models/rf_baseline_metrics.csv")
+tenag_brt_sp_both_baseline_metrics <- read.csv("~/Desktop/r&r_model_runs/tenagophila_sp_limited_models/brt_baseline_metrics.csv")
+tenag_sp_both_models_auc_df <- c(tenag_me_sp_both_baseline_metrics$auc, 
+                                 tenag_rf_sp_both_baseline_metrics$auc, 
+                                 tenag_brt_sp_both_baseline_metrics$auc)
+mean(tenag_sp_both_models_auc_df, na.rm = T)
+mean(tenag_sp_both_models_auc_df)+(sd(tenag_sp_both_models_auc_df)/sqrt(length(tenag_sp_both_models_auc_df)))
+mean(tenag_sp_both_models_auc_df)-(sd(tenag_sp_both_models_auc_df)/sqrt(length(tenag_sp_both_models_auc_df)))
+```
+

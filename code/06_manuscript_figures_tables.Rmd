@@ -1,0 +1,1290 @@
+---
+title: "Manuscript Figures and Tables"
+author: "Alyson Singleton"
+date: "`r Sys.Date()`"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+# install packages, load libraries, set themes, knit formatting
+pacman::p_load(tidyverse, dplyr, kableExtra, knitr, sf, raster, terra, spData, tmap, leaflet, ggplot2, spThin, mapdata, rnaturalearth, rnaturalearthdata, brazilmaps, devtools, brazilmaps, mapview, grid, gridExtra, RColorBrewer, geobr, ggpubr, cowplot, showtext)
+
+theme_set(theme_bw())
+knitr::opts_chunk$set(echo = F, results='asis', warning=F, message=F, cache=T,
+                      fig.height=5, fig.width=10)
+
+get_legend<-function(myggplot){
+  tmp <- ggplot_gtable(ggplot_build(myggplot))
+  leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box")
+  legend <- tmp$grobs[[leg]]
+  return(legend)
+}
+
+
+font_add("Arial", "/Library/Fonts/Arial.ttf")
+showtext_auto()
+
+no_axis <- theme(axis.title=element_blank(),
+                 axis.text=element_blank(),
+                 axis.ticks=element_blank(),
+                 panel.grid.major = element_blank())
+
+```
+
+```{r, Figure 1, eval=T}
+#---------------------------------------------------------------------------------------------------------
+# Figure 1: Presence points by species, (a) national, (b) sudeste, (c) sp/mg
+#---------------------------------------------------------------------------------------------------------
+
+# Figure 1a: National
+states <- read_state(
+  year=2020, 
+  showProgress = FALSE
+)
+
+occurrences <- readRDS("../data/mapping_datasets/national_occurrences_thinned_mapping.rds")
+occurrences$species <- factor(occurrences$species, levels=c("B. glabrata", "B. straminea", "B. tenagophila"))
+occurrences <- occurrences[order(occurrences$species,decreasing=F),]
+
+# Plot all Brazilian states
+fig1a <- ggplot() +
+  geom_sf(data=states, fill="#F4F4F4", color="#626262", size=.15, show.legend = FALSE) +
+  geom_sf(data = occurrences, aes(geometry = geometry, fill=species, shape=source), colour="black", size = 1.7, alpha=0.5) + 
+  scale_fill_manual(values=c("#DC267F","#FFB000","#648FFF"))+
+  scale_shape_manual(values=c(21,23),
+                     labels=c("Expert", "GBIF")) +
+  theme_minimal() +
+  no_axis +
+  xlim(c(-72.5, -35)) +
+  labs(fill="Species", shape="Source") +
+  theme(legend.text=element_text(size=10),
+        legend.title=element_text(size=12), 
+        legend.position="right") + 
+  guides(fill=guide_legend(override.aes=list(shape=21))) 
+legend <- get_legend(fig1a)
+fig1a <- fig1a + theme(legend.position = "none")
+
+# Figure 1b: Sao Paulo
+sp_state <- read_state(
+  code_state="SP",
+  year=2020,
+  showProgress = FALSE
+)
+
+occurrences <- readRDS("../data/mapping_datasets/sp_occurrences_thinned_mapping.rds")
+occurrences$species <- factor(occurrences$species, levels=c("B. tenagophila", "B. glabrata", "B. straminea"))
+occurrences <- occurrences[order(occurrences$species,decreasing=T),]
+
+fig1b <- ggplot() +
+  geom_sf(data=sp_state, fill="#F4F4F4", color="#626262", size=.15, show.legend = FALSE) +
+  geom_sf(data = occurrences, aes(geometry = geometry, fill=species, shape=source), colour="black", size = 2.5, alpha=0.5) + 
+  scale_fill_manual(values=c("#648FFF","#DC267F","#FFB000"))+
+  scale_shape_manual(values=c(21,23),
+                     labels=c("Expert", "GBIF")) +
+  theme_minimal() +
+  no_axis +
+  labs(fill="Species", shape="Source") +
+  theme(legend.text=element_text(size=14),
+        legend.title=element_text(size=16), 
+        legend.position="none") + 
+  guides(fill=guide_legend(override.aes=list(shape=21))) 
+
+# Figure 1c: Minas Gerais
+mg_state <- read_state(
+  code_state="MG",
+  year=2020,
+  showProgress = FALSE
+)
+
+occurrences <- readRDS("../data/mapping_datasets/mg_occurrences_thinned_mapping.rds")
+occurrences$species <- factor(occurrences$species, levels=c("B. glabrata", "B. straminea", "B. tenagophila"))
+occurrences <- occurrences[order(occurrences$species,decreasing=F),]
+
+fig1c <- ggplot() +
+  geom_sf(data=mg_state, fill="#F4F4F4", color="#626262", size=.15, show.legend = FALSE) +
+  geom_sf(data = occurrences, aes(geometry = geometry, fill=species, shape=source), colour="black", size = 2.5, alpha=0.5) + 
+  scale_fill_manual(values=c("#DC267F","#FFB000","#648FFF"))+
+  scale_shape_manual(values=c(21,23),
+                     labels=c("Expert", "GBIF")) +
+  theme_minimal() +
+  no_axis +
+  labs(fill="Species", shape="Source") +
+  theme(legend.text=element_text(size=14),
+        legend.title=element_text(size=16), 
+        legend.position="none") + 
+  guides(fill=guide_legend(override.aes=list(shape=21))) 
+
+# Full Figure 1
+fig1 <- grid.arrange(fig1a, fig1c, fig1b, legend,                            
+             ncol = 6, nrow = 5, 
+             layout_matrix = rbind(c(1,1,1,1,2,2,4), c(1,1,1,1,2,2,4), c(1,1,1,1,3,3,4), c(1,1,1,1,3,3,4)))
+
+fig1 <- as_ggplot(fig1) +                                
+  draw_plot_label(label = c("A", "B", "C"), size = 15,
+                  x = c(0.03, 0.55, 0.55), y = c(0.925, 0.925, 0.45)) 
+
+ggsave("Fig1.pdf", fig1, path="~/Desktop/r&r_figures/",width=14, height=10, units="in", device = "pdf")
+```
+
+```{r, Figure 2, eval=T}
+#---------------------------------------------------------------------------------------------------------
+# Figure 2: National prediction maps of B. straminea/tenagophila suitability probabilities by model type
+#---------------------------------------------------------------------------------------------------------
+#tell R you want to save the end plot as a pdf
+pdf("~/Desktop/Fig2.pdf", width=11, height=10)
+
+#set standard scale/colors for this figure
+zlim <- range(c(0,1))
+breakpoints <- c(seq(0, 1, 0.125))
+colors2 <- c(RColorBrewer::brewer.pal(9, "BuPu"))[2:9]
+
+#plot set up
+par(mar = c(0, 0, 0, 0))
+par(mfrow=c(3,3), mar = c(1,3,2,0))
+
+#load in nine mean maps and plot
+str_name <-'~/Desktop/doctorate/ch1 brazil schisto/r&r/r&r_predictions/glabrata_national_models/prediction_rasters/maxent_mean.tif' 
+me_pred_raster <- raster(str_name)
+colors2 <- c(RColorBrewer::brewer.pal(9, "BuPu"))[2:9]
+fig2a <- plot(me_pred_raster,
+              main="Maximum Entropy", 
+              axes = FALSE, box = FALSE, legend = FALSE,
+              breaks = c(0,seq(0.025, me_pred_raster@data@max, (me_pred_raster@data@max-0.025)/7)), col = colors2,
+              cex.main = 2, cex.lab=2, zlim=range(c(me_pred_raster@data@min,me_pred_raster@data@max))
+)
+title(ylab = "B. glabrata\n", adj=0.5, line=-0.59, font.lab=4, cex.lab=1.6)
+title("A",adj=0, cex.main=1.6)
+
+str_name <-'~/Desktop/doctorate/ch1 brazil schisto/r&r/r&r_predictions/glabrata_national_models/prediction_rasters/rf_mean.tif' 
+rf_pred_raster <- brick(str_name)
+fig2b <- raster::plot(rf_pred_raster[[c(1)]],
+                      main="Random Forest",
+                      axes = FALSE, box = FALSE,  legend = FALSE,
+                      breaks = c(seq(rf_pred_raster@data@min, rf_pred_raster@data@max, (rf_pred_raster@data@max-rf_pred_raster@data@min)/8)), col = colors2,
+                      cex.main = 2, cex.lab=2, zlim=range(c(rf_pred_raster@data@min,rf_pred_raster@data@max))
+)
+title("B",adj=0, cex.main=1.6)
+
+str_name <-'~/Desktop/doctorate/ch1 brazil schisto/r&r/r&r_predictions/glabrata_national_models/prediction_rasters/brt_mean.tif' 
+brt_pred_raster <- brick(str_name)
+fig2c <- plot(brt_pred_raster[[c(1)]],
+              main="Boosted Regression Tree",
+              axes = FALSE, box = FALSE, legend = FALSE,
+              breaks = c(seq(brt_pred_raster@data@min, brt_pred_raster@data@max, (brt_pred_raster@data@max-brt_pred_raster@data@min)/8)), col = colors2,
+              cex.main = 2, cex.lab=2, zlim=range(c(brt_pred_raster@data@min,brt_pred_raster@data@max))
+)
+title("C",adj=0, cex.main=1.6)
+
+str_name <-'~/Desktop/doctorate/ch1 brazil schisto/r&r/r&r_predictions/straminea_national_models/prediction_rasters/maxent_mean.tif' 
+me_pred_raster <- raster(str_name)
+colors2 <- c(RColorBrewer::brewer.pal(9, "BuPu"))[2:9]
+fig2d <- plot(me_pred_raster, 
+              axes = FALSE, box = FALSE, legend = FALSE,
+              breaks = c(seq(me_pred_raster@data@min, me_pred_raster@data@max, (me_pred_raster@data@max-me_pred_raster@data@min)/8)), col = colors2,
+              cex.main = 2, cex.lab=2, zlim=range(c(me_pred_raster@data@min,me_pred_raster@data@max))
+)
+title(ylab = "B. straminea\n", adj=0.5, line=-0.59, font.lab=4, cex.lab=1.6)
+title("D",adj=0, cex.main=1.6)
+
+str_name <-'~/Desktop/doctorate/ch1 brazil schisto/r&r/r&r_predictions/straminea_national_models/prediction_rasters/rf_mean.tif' 
+rf_pred_raster <- brick(str_name)
+fig2e <- plot(rf_pred_raster[[c(1)]],
+                      axes = FALSE, box = FALSE,  legend = FALSE,
+                      breaks = c(seq(rf_pred_raster@data@min, rf_pred_raster@data@max, (rf_pred_raster@data@max-rf_pred_raster@data@min)/8)), col = colors2,
+                      cex.main = 2, cex.lab=2, zlim=range(c(rf_pred_raster@data@min,rf_pred_raster@data@max))
+)
+title("E",adj=0, cex.main=1.6)
+
+str_name <-'~/Desktop/doctorate/ch1 brazil schisto/r&r/r&r_predictions/straminea_national_models/prediction_rasters/brt_mean.tif' 
+brt_pred_raster <- brick(str_name)
+fig2f <- plot(brt_pred_raster[[c(1)]],    
+              axes = FALSE, box = FALSE, legend = FALSE,
+              breaks = c(seq(brt_pred_raster@data@min, brt_pred_raster@data@max, (brt_pred_raster@data@max-brt_pred_raster@data@min)/8)), col = colors2,
+              cex.main = 2, cex.lab=2, zlim=range(c(brt_pred_raster@data@min,brt_pred_raster@data@max))
+)
+title("F",adj=0, cex.main=1.6)
+
+str_name <-'~/Desktop/doctorate/ch1 brazil schisto/r&r/r&r_predictions/tenagophila_national_models/prediction_rasters/maxent_mean.tif' 
+me_pred_raster <- brick(str_name)
+fig2g <- plot(me_pred_raster[[c(1)]],  
+              axes = FALSE, box = FALSE, legend = FALSE,
+              breaks = c(seq(me_pred_raster@data@min, me_pred_raster@data@max, (me_pred_raster@data@max-me_pred_raster@data@min)/8)), col = colors2,
+              cex.main = 2, cex.lab=2, zlim=range(c(me_pred_raster@data@min,me_pred_raster@data@max))
+)
+title(ylab = "B. tenagophila\n", adj=0.5, line=-0.59, font.lab=4, cex.lab=1.6)
+title("G",adj=0, cex.main=1.6)
+
+str_name <-'~/Desktop/doctorate/ch1 brazil schisto/r&r/r&r_predictions/tenagophila_national_models/prediction_rasters/rf_mean.tif' 
+rf_pred_raster <- brick(str_name)
+fig2h <- raster::plot(rf_pred_raster[[c(1)]],  
+                      axes = FALSE, box = FALSE, legend = FALSE,
+                      breaks = c(seq(rf_pred_raster@data@min, rf_pred_raster@data@max, (rf_pred_raster@data@max-rf_pred_raster@data@min)/8)), col = colors2,
+                      cex.main = 2, cex.lab=2, zlim=range(c(rf_pred_raster@data@min,rf_pred_raster@data@max))
+)
+title("H",adj=0, cex.main=1.6)
+
+str_name <-'~/Desktop/doctorate/ch1 brazil schisto/r&r/r&r_predictions/tenagophila_national_models/prediction_rasters/brt_mean.tif' 
+brt_pred_raster <- brick(str_name)
+fig2i <- plot(brt_pred_raster[[c(1)]],
+              axes = FALSE, box = FALSE, legend = FALSE,
+              breaks = c(seq(brt_pred_raster@data@min, brt_pred_raster@data@max, (brt_pred_raster@data@max-brt_pred_raster@data@min)/8)), col = colors2,
+              cex.main = 2, cex.lab=2, zlim=range(c(rf_pred_raster@data@min,brt_pred_raster@data@max))
+)
+title("I",adj=0, cex.main=1.6)
+dev.off()
+```
+
+```{r, Figure 3, eval=T}
+#---------------------------------------------------------------------------------------------------------
+# Figure 3: Model selection discussion, model performance measures v qualitative expert analysis
+#---------------------------------------------------------------------------------------------------------
+
+#________________________auc STRAMINEA____________________________________________________
+#build straminea national auc table
+stram_me_national_baseline_metrics <- read.csv("~/Desktop/r&r_model_runs/straminea_national_models/maxent_baseline_metrics.csv")
+stram_rf_national_baseline_metrics <- read.csv("~/Desktop/r&r_model_runs/straminea_national_models/rf_baseline_metrics.csv")
+stram_brt_national_baseline_metrics <- read.csv("~/Desktop/r&r_model_runs/straminea_national_models/brt_baseline_metrics.csv")
+stram_national_models_auc_df <- as.data.frame(cbind(stram_me_national_baseline_metrics$auc, 
+                                                    stram_rf_national_baseline_metrics$auc, 
+                                                    stram_brt_national_baseline_metrics$auc))
+colnames(stram_national_models_auc_df) <- c("MaxEnt", "RF", "BRT")
+#build straminea sudeste auc table
+stram_me_sudeste_baseline_metrics <- read.csv("~/Desktop/r&r_model_runs/straminea_sudeste_models/maxent_baseline_metrics.csv")
+stram_rf_sudeste_baseline_metrics <- read.csv("~/Desktop/r&r_model_runs/straminea_sudeste_models/rf_baseline_metrics.csv")
+stram_brt_sudeste_baseline_metrics <- read.csv("~/Desktop/r&r_model_runs/straminea_sudeste_models/brt_baseline_metrics.csv")
+stram_sudeste_models_auc_df <- as.data.frame(cbind(stram_me_sudeste_baseline_metrics$auc, 
+                                                   stram_rf_sudeste_baseline_metrics$auc, 
+                                                   stram_brt_sudeste_baseline_metrics$auc))
+colnames(stram_sudeste_models_auc_df) <- c("MaxEnt", "RF", "BRT")
+#build straminea mg auc table
+stram_me_mg_baseline_metrics <- read.csv("~/Desktop/r&r_model_runs/straminea_mg_models/maxent_baseline_metrics.csv")
+stram_rf_mg_baseline_metrics <- read.csv("~/Desktop/r&r_model_runs/straminea_mg_models/rf_baseline_metrics.csv")
+stram_brt_mg_baseline_metrics <- read.csv("~/Desktop/r&r_model_runs/straminea_mg_models/brt_baseline_metrics.csv")
+stram_mg_models_auc_df <- as.data.frame(cbind(stram_me_mg_baseline_metrics$auc, 
+                                              stram_rf_mg_baseline_metrics$auc, 
+                                              stram_brt_mg_baseline_metrics$auc))
+colnames(stram_mg_models_auc_df) <- c("MaxEnt", "RF", "BRT")
+
+# Build full plot
+stram_national_models_auc_df$geo_extent <- "National"
+stram_sudeste_models_auc_df$geo_extent <- "Sudeste"
+stram_mg_models_auc_df$geo_extent <- "Minas Gerais"
+
+stram_auc_df <- rbind(stram_national_models_auc_df, stram_sudeste_models_auc_df, stram_mg_models_auc_df)
+stram_auc_df <- stram_auc_df %>% pivot_longer(cols=c('MaxEnt', 'RF', 'BRT'),
+                    names_to='model',
+                    values_to='auc')
+stram_auc_df <- as.data.frame(stram_auc_df)
+
+second.smallest.func <- function(x, n=2){
+  sort(x)[n]
+}
+second.largest.func <- function(x, n=2){
+  -sort(-x)[n]
+}
+
+stram_auc_df_summary <- stram_auc_df %>% 
+  group_by(geo_extent, model) %>%
+  summarise(
+    n = n(),
+    mean = mean(auc),
+    second.min = second.smallest.func(auc),
+    second.max = second.largest.func(auc),
+    sd.err.high = mean(auc)+(sd(auc)/sqrt(n)) ,
+    sd.err.low = mean(auc)-(sd(auc)/sqrt(n)))
+
+fig3a <- stram_auc_df_summary %>%
+  mutate(model = factor(model, levels = c("MaxEnt","RF", "BRT"))) %>%
+  mutate(geo_extent = factor(geo_extent, levels = c("National","Sudeste", "Minas Gerais"))) %>%
+  ggplot(aes(model, mean, color=model)) + 
+  geom_errorbar(aes(ymin=sd.err.low,ymax=sd.err.high,color=model),width=0.4,linewidth=0.9) +
+  geom_point(aes(x=model, y=mean,color=model),size=3) +
+  facet_grid(cols = vars(geo_extent)) +
+  labs(color="Model Type") +
+  scale_color_manual(values=c('#73D2DE', '#FFBC42', '#D81159')) + 
+  theme_bw()+
+  theme(plot.title = element_text(hjust=0.5, size=26, face="italic"),
+        plot.subtitle = element_text(hjust=0.5, size=22),
+        axis.title=element_text(size=22),
+        axis.title.y=element_blank(),
+        axis.text.y=element_text(size=18),
+        axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.text = element_text(size=20),
+        legend.text=element_text(size=20),
+        legend.title=element_text(size=20),
+        legend.position = "none",
+        strip.text.x = element_text(size = 14)) + 
+  ggtitle("B. straminea") +
+  xlab("Model Type") + ylab("AUC (Out of Sample)") + ylim(0.55,0.85)
+fig3a
+
+#________________________ auc TENAGOPHILA________________________________________________
+#build tenagophila national auc table
+tenag_me_national_baseline_metrics <- read.csv("~/Desktop/r&r_model_runs/tenagophila_national_models/maxent_baseline_metrics.csv")
+tenag_rf_national_baseline_metrics <- read.csv("~/Desktop/r&r_model_runs/tenagophila_national_models/rf_baseline_metrics.csv")
+tenag_brt_national_baseline_metrics <- read.csv("~/Desktop/r&r_model_runs/tenagophila_national_models/brt_baseline_metrics.csv")
+tenag_national_models_auc_df <- as.data.frame(cbind(tenag_me_national_baseline_metrics$auc, 
+                                                    tenag_rf_national_baseline_metrics$auc, 
+                                                    tenag_brt_national_baseline_metrics$auc))
+colnames(tenag_national_models_auc_df) <- c("MaxEnt", "RF", "BRT")
+tenag_national_models_auc_df$n <- sum(!is.na(tenag_national_models_auc_df$MaxEnt))
+
+#build tenagophila sudeste auc table
+tenag_me_sudeste_baseline_metrics <- read.csv("~/Desktop/r&r_model_runs/tenagophila_sudeste_models/maxent_baseline_metrics.csv")
+tenag_rf_sudeste_baseline_metrics <- read.csv("~/Desktop/r&r_model_runs/tenagophila_sudeste_models/rf_baseline_metrics.csv")
+tenag_brt_sudeste_baseline_metrics <- read.csv("~/Desktop/r&r_model_runs/tenagophila_sudeste_models/brt_baseline_metrics.csv")
+tenag_sudeste_models_auc_df <- as.data.frame(cbind(tenag_me_sudeste_baseline_metrics$auc, 
+                                                   tenag_rf_sudeste_baseline_metrics$auc, 
+                                                   tenag_brt_sudeste_baseline_metrics$auc))
+colnames(tenag_sudeste_models_auc_df) <- c("MaxEnt", "RF", "BRT")
+tenag_sudeste_models_auc_df$n <- sum(!is.na(tenag_sudeste_models_auc_df$MaxEnt))
+
+#build tenagophila mg auc table
+tenag_me_mg_baseline_metrics <- read.csv("~/Desktop/r&r_model_runs/tenagophila_sp_models/maxent_baseline_metrics.csv")
+tenag_rf_mg_baseline_metrics <- read.csv("~/Desktop/r&r_model_runs/tenagophila_sp_models/rf_baseline_metrics.csv")
+tenag_brt_mg_baseline_metrics <- read.csv("~/Desktop/r&r_model_runs/tenagophila_sp_models/brt_baseline_metrics.csv")
+tenag_mg_models_auc_df <- as.data.frame(cbind(tenag_me_mg_baseline_metrics$auc, 
+                                              tenag_rf_mg_baseline_metrics$auc, 
+                                              tenag_brt_mg_baseline_metrics$auc))
+colnames(tenag_mg_models_auc_df) <- c("MaxEnt", "RF", "BRT")
+tenag_mg_models_auc_df$n <- sum(!is.na(tenag_mg_models_auc_df$MaxEnt))
+
+# Build full plot
+tenag_national_models_auc_df$geo_extent <- "National"
+tenag_sudeste_models_auc_df$geo_extent <- "Sudeste"
+tenag_mg_models_auc_df$geo_extent <- "S?o Paulo"
+
+tenag_auc_df <- rbind(tenag_national_models_auc_df, tenag_sudeste_models_auc_df, tenag_mg_models_auc_df)
+tenag_auc_df <- tenag_auc_df %>% pivot_longer(cols=c('MaxEnt', 'RF', 'BRT'),
+                                              names_to='model',
+                                              values_to='auc')
+tenag_auc_df <- as.data.frame(tenag_auc_df)
+
+tenag_auc_df_summary <- tenag_auc_df %>% 
+  group_by(geo_extent, model, n) %>%
+  summarise(
+    n = n(),
+    mean = mean(auc,na.rm=T),
+    second.min = second.smallest.func(auc),
+    second.max = second.largest.func(auc),
+    sd.err.high = mean(auc,na.rm=T)+(sd(auc,na.rm=T)/sqrt(n)) ,
+    sd.err.low = mean(auc,na.rm=T)-(sd(auc,na.rm=T)/sqrt(n)))
+tenag_auc_df_summary <- distinct(tenag_auc_df_summary)
+
+fig3b <- tenag_auc_df_summary %>%
+  mutate(model = factor(model, levels = c("MaxEnt","RF", "BRT"))) %>%
+  mutate(geo_extent = factor(geo_extent, levels = c("National","Sudeste", "S?o Paulo"))) %>%
+  ggplot(aes(model, mean, color=model)) + 
+  geom_errorbar(aes(ymin=sd.err.low,ymax=sd.err.high,color=model),width=0.4,linewidth=0.9) +
+  geom_point(aes(x=model, y=mean,color=model),size=3) +
+  facet_grid(cols = vars(geo_extent)) +
+  labs(color="Model Type") +
+  scale_color_manual(values=c('#73D2DE', '#FFBC42', '#D81159')) + 
+  theme_bw()+
+  theme(plot.title = element_text(hjust=0.5, size=26, face="italic"),
+        plot.subtitle = element_text(hjust=0.5, size=22),
+        axis.title=element_text(size=22),
+        axis.title.y=element_blank(),
+        axis.text.y=element_text(size=18),
+        axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.text = element_text(size=20),
+        legend.text=element_text(size=20),
+        legend.title=element_text(size=20),
+        legend.position = "bottom",
+        strip.text.x = element_text(size = 14)) + 
+  ggtitle("B. tenagophila") +
+  xlab("Model Type") + ylab("AUC (Out of Sample)") + ylim(0.55,0.85)
+fig3b
+legend <- get_legend(fig3b)
+fig3b <- fig3b + theme(legend.position = "none")
+
+#________________________auc glabrata____________________________________________________
+#build glabrata national auc table
+glab_me_national_baseline_metrics <- read.csv("~/Desktop/r&r_model_runs/glabrata_national_models/maxent_baseline_metrics.csv")
+glab_rf_national_baseline_metrics <- read.csv("~/Desktop/r&r_model_runs/glabrata_national_models/rf_baseline_metrics.csv")
+glab_brt_national_baseline_metrics <- read.csv("~/Desktop/r&r_model_runs/glabrata_national_models/brt_baseline_metrics.csv")
+glab_national_models_auc_df <- as.data.frame(cbind(glab_me_national_baseline_metrics$auc, 
+                                                    glab_rf_national_baseline_metrics$auc, 
+                                                    glab_brt_national_baseline_metrics$auc))
+colnames(glab_national_models_auc_df) <- c("MaxEnt", "RF", "BRT")
+#build glabrata sudeste auc table
+glab_me_sudeste_baseline_metrics <- read.csv("~/Desktop/r&r_model_runs/glabrata_sudeste_models/maxent_baseline_metrics.csv")
+glab_rf_sudeste_baseline_metrics <- read.csv("~/Desktop/r&r_model_runs/glabrata_sudeste_models/rf_baseline_metrics.csv")
+glab_brt_sudeste_baseline_metrics <- read.csv("~/Desktop/r&r_model_runs/glabrata_sudeste_models/brt_baseline_metrics.csv")
+glab_sudeste_models_auc_df <- as.data.frame(cbind(glab_me_sudeste_baseline_metrics$auc, 
+                                                   glab_rf_sudeste_baseline_metrics$auc, 
+                                                   glab_brt_sudeste_baseline_metrics$auc))
+colnames(glab_sudeste_models_auc_df) <- c("MaxEnt", "RF", "BRT")
+#build glabrata mg auc table
+glab_me_mg_baseline_metrics <- read.csv("~/Desktop/r&r_model_runs/glabrata_mg_models/maxent_baseline_metrics.csv")
+glab_rf_mg_baseline_metrics <- read.csv("~/Desktop/r&r_model_runs/glabrata_mg_models/rf_baseline_metrics.csv")
+glab_brt_mg_baseline_metrics <- read.csv("~/Desktop/r&r_model_runs/glabrata_mg_models/brt_baseline_metrics.csv")
+glab_mg_models_auc_df <- as.data.frame(cbind(glab_me_mg_baseline_metrics$auc, 
+                                              glab_rf_mg_baseline_metrics$auc, 
+                                              glab_brt_mg_baseline_metrics$auc))
+colnames(glab_mg_models_auc_df) <- c("MaxEnt", "RF", "BRT")
+
+# Build full plot
+glab_national_models_auc_df$geo_extent <- "National"
+glab_sudeste_models_auc_df$geo_extent <- "Sudeste"
+glab_mg_models_auc_df$geo_extent <- "Minas Gerais"
+
+glab_auc_df <- rbind(glab_national_models_auc_df, glab_sudeste_models_auc_df, glab_mg_models_auc_df)
+glab_auc_df <- glab_auc_df %>% pivot_longer(cols=c('MaxEnt', 'RF', 'BRT'),
+                                              names_to='model',
+                                              values_to='auc')
+glab_auc_df <- as.data.frame(glab_auc_df)
+
+second.smallest.func <- function(x, n=2){
+  sort(x)[n]
+}
+second.largest.func <- function(x, n=2){
+  -sort(-x)[n]
+}
+
+glab_auc_df_summary <- glab_auc_df %>% 
+  group_by(geo_extent, model) %>%
+  summarise(n = n(),
+            mean = mean(auc, na.rm=T),
+            second.min = second.smallest.func(auc),
+            second.max = second.largest.func(auc),
+            sd.err.high = mean(auc, na.rm=T)+(sd(auc, na.rm=T)/sqrt(n)) ,
+            sd.err.low = mean(auc, na.rm=T)-(sd(auc, na.rm=T)/sqrt(n)))
+
+fig3c <- glab_auc_df_summary %>%
+  mutate(model = factor(model, levels = c("MaxEnt","RF", "BRT"))) %>%
+  mutate(geo_extent = factor(geo_extent, levels = c("National","Sudeste", "Minas Gerais"))) %>%
+  ggplot(aes(model, mean, color=model)) + 
+  geom_errorbar(aes(ymin=sd.err.low,ymax=sd.err.high,color=model),width=0.4,linewidth=0.9) +
+  geom_point(aes(x=model, y=mean,color=model),size=3) +
+  facet_grid(cols = vars(geo_extent)) +
+  labs(color="Model Type") +
+  scale_color_manual(values=c('#73D2DE', '#FFBC42', '#D81159')) + 
+  theme_bw()+
+  theme(plot.title = element_text(hjust=0.5, size=26, face="italic"),
+        plot.subtitle = element_text(hjust=0.5, size=22),
+        axis.title=element_text(size=22),
+        axis.title.y=element_blank(),
+        axis.text.y=element_text(size=18),
+        axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.text = element_text(size=20),
+        legend.text=element_text(size=20),
+        legend.title=element_text(size=20),
+        legend.position = "none",
+        strip.text.x = element_text(size = 14)) + 
+  ggtitle("B. glabrata") +
+  xlab("Model Type") + ylab("AUC (Out of Sample)") + ylim(0.55,0.85)
+fig3c
+
+#________________________Full Figure 3____________________________________________________
+#two species
+fig3 <- grid.arrange(fig3c, fig3a, fig3b, legend,                            
+                     ncol = 3, nrow = 2,
+                     layout_matrix = rbind(c(1,2,3), c(4,4,4)),heights=c(7,1))
+
+fig3 <- as_ggplot(fig3) +                                
+  draw_plot_label(label = c("A", "B"), size = 24,
+                  x = c(0.02, 0.51), y = c(0.997, 0.997)) 
+
+annotate_figure(fig3, left = textGrob("AUC (out of sample)", rot = 90, vjust = 1, gp = gpar(cex = 1.7)))
+
+#three species
+fig3all <- grid.arrange(fig3c, fig3a, fig3b, legend,                            
+                     ncol = 3, nrow = 2,
+                     layout_matrix = rbind(c(1,2,3), c(4,4,4)),heights=c(7,1))
+
+fig3all <- as_ggplot(fig3all) +                                
+  draw_plot_label(label = c("A", "B", "C"), size = 24,
+                  x = c(0.01, 0.345, 0.68), y = c(0.997, 0.997, 0.997)) 
+
+fig3all <- annotate_figure(fig3all, left = textGrob("AUC (out of sample)", rot = 90, vjust = 1, gp = gpar(cex = 1.7)))
+fig3all
+ggsave("Fig3.pdf", plot=fig3all, path="~/Desktop/r&r_figures/", width=14, height=8, units="in", device = "pdf")
+```
+
+```{r, Table 3, eval=T}
+#---------------------------------------------------------------------------------------------------------
+# Table 3
+#---------------------------------------------------------------------------------------------------------
+
+glab_auc_df_summary[c(5,6,4),c(1,2,4,7,8)]
+stram_auc_df_summary[c(5,6,4),c(1,2,4,7,8)]
+tenag_auc_df_summary[c(2,3,1),c(1,2,4,7,8)]
+
+glab_sensitivity_df_summary[c(5,6,4),c(1,2,4,7,8)]
+stram_sensitivity_df_summary[c(5,6,4),c(1,2,4,7,8)]
+tenag_sensitivity_df_summary[c(2,3,1),c(1,2,4,7,8)]
+
+glab_specificity_df_summary[c(5,6,4),c(1,2,4,7,8)]
+stram_specificity_df_summary[c(5,6,4),c(1,2,4,7,8)]
+tenag_specificity_df_summary[c(2,3,1),c(1,2,4,7,8)]
+
+glab_pauc_mean_df_summary[c(5,6,4),c(1,2,4,7,8)]
+stram_pauc_mean_df_summary[c(5,6,4),c(1,2,4,7,8)]
+tenag_pauc_mean_df_summary[c(2,3,1),c(1,2,4,7,8)]
+
+glab_pauc_pval_df_summary[c(5,6,4),c(1,2,4,5,8,9)]
+stram_pauc_pval_df_summary[c(5,6,4),c(1,2,4,5,8,9)]
+tenag_pauc_pval_df_summary[c(2,3,1),c(1,2,4,5,8,9)]
+
+glab_tss_df_summary[c(5,6,4),c(1,2,4,7,8)]
+stram_tss_df_summary[c(5,6,4),c(1,2,4,7,8)]
+tenag_tss_df_summary[c(2,3,1),c(1,2,4,7,8)]
+```
+
+```{r, Figure 4, eval=T}
+#---------------------------------------------------------------------------------------------------------
+# Figure 4: Scale map prediction comparison
+#---------------------------------------------------------------------------------------------------------
+## Minas Gerais Straminea
+pdf("~/Desktop/r&r_figures/Fig4stram.pdf", width=8, height=9)
+colors2 <- c(RColorBrewer::brewer.pal(9, "BuPu"))[2:9]
+par(mar = c(0, 0, 0, 0))
+par(mfrow=c(3,2), mar = c(1,3,2,0))
+
+str_name <-'~/Desktop/r&r_predictions/straminea_mg_models/prediction_rasters/maxent_mean.tif'
+me_pred_raster1 <- brick(str_name)
+plot(me_pred_raster1[[c(1)]],  
+     main="State model",
+     axes = FALSE, box = FALSE, legend=FALSE,
+     breaks = c(seq(me_pred_raster1@data@min, me_pred_raster1@data@max, (me_pred_raster1@data@max-me_pred_raster1@data@min)/8)), col = colors2,
+     cex.main = 2, cex.lab=2, zlim=range(c(me_pred_raster1@data@min,me_pred_raster1@data@max))
+)
+title(ylab = "Maximum Entropy\n", adj=0.5, line=-0.59, cex.lab=1.8)
+title("A",adj=0.01, cex.main=1.8)
+
+str_name <-'~/Desktop/r&r_predictions/straminea_mg_models/prediction_rasters/maxent_national_cropped.tif'
+me_pred_raster2 <- brick(str_name)
+plot(me_pred_raster2[[c(1)]],  
+     main="Cropped national model",
+     axes = FALSE, box = FALSE, legend=FALSE,
+     breaks = c(seq(me_pred_raster2@data@min, me_pred_raster2@data@max, (me_pred_raster2@data@max-me_pred_raster2@data@min)/8)), col = colors2,
+     cex.main = 2, cex.lab=2, zlim=range(c(me_pred_raster2@data@min,me_pred_raster2@data@max))
+)
+title("B",adj=0.01, cex.main=1.8)
+
+str_name <-'~/Desktop/r&r_predictions/straminea_mg_models/prediction_rasters/rf_mean.tif'
+me_pred_raster3 <- brick(str_name)
+plot(me_pred_raster3[[c(1)]],  
+     axes = FALSE, box = FALSE, legend=FALSE,
+     breaks = c(seq(me_pred_raster3@data@min, me_pred_raster3@data@max, (me_pred_raster3@data@max-me_pred_raster3@data@min)/8)), col = colors2,
+     cex.main = 2, cex.lab=2, zlim=range(c(me_pred_raster3@data@min,me_pred_raster3@data@max))
+)
+title(ylab = "Random Forest\n", adj=0.5, line=-0.59, cex.lab=1.8)
+title("C",adj=0.01, cex.main=1.8)
+
+str_name <-'~/Desktop/r&r_predictions/straminea_mg_models/prediction_rasters/rf_national_cropped.tif'
+rf_pred_raster1 <- brick(str_name)
+raster::plot(rf_pred_raster1[[c(1)]],  
+             axes = FALSE, box = FALSE, legend=FALSE,
+             breaks = c(seq(rf_pred_raster1@data@min, rf_pred_raster1@data@max, (rf_pred_raster1@data@max-rf_pred_raster1@data@min)/8)), col = colors2,
+             cex.main = 2, cex.lab=2, zlim=range(c(rf_pred_raster1@data@min,rf_pred_raster1@data@max))
+)
+title("D",adj=0.01, cex.main=1.8)
+
+str_name <-'~/Desktop/r&r_predictions/straminea_mg_models/prediction_rasters/brt_mean.tif'
+rf_pred_raster2 <- brick(str_name)
+plot(rf_pred_raster2[[c(1)]],
+     axes = FALSE, box = FALSE, legend=FALSE,
+     breaks = c(seq(rf_pred_raster2@data@min, rf_pred_raster2@data@max, (rf_pred_raster2@data@max-rf_pred_raster2@data@min)/8)), col = colors2,
+     cex.main = 2, cex.lab=2, zlim=range(c(rf_pred_raster2@data@min,rf_pred_raster2@data@max))
+)
+title(ylab = "Boosted Regression Tree\n", adj=0.5, line=-0.59, cex.lab=1.8)
+title("E",adj=0.01, cex.main=1.8)
+
+str_name <-'~/Desktop/r&r_predictions/straminea_mg_models/prediction_rasters/brt_national_cropped.tif'
+rf_pred_raster3 <- brick(str_name)
+plot(rf_pred_raster3[[c(1)]],
+     axes = FALSE, box = FALSE, legend=FALSE,
+     breaks = c(seq(rf_pred_raster3@data@min, rf_pred_raster3@data@max, (rf_pred_raster3@data@max-rf_pred_raster3@data@min)/8)), col = colors2,
+     cex.main = 2, cex.lab=2, zlim=range(c(rf_pred_raster3@data@min,rf_pred_raster3@data@max))
+)
+title("F",adj=0.01, cex.main=1.8)
+dev.off()
+#---------------------------------------------------------------------------------------------------------
+## São Paulo Tenagophila
+pdf("~/Desktop/r&r_figures/Fig4tenag.pdf", width=8, height=9)
+colors2 <- c(RColorBrewer::brewer.pal(9, "BuPu"))[2:9]
+par(mar = c(0, 0, 0, 0))
+par(mfrow=c(3,2), mar = c(1,3,2,0))
+
+str_name <-'~/Desktop/r&r_predictions/tenagophila_sp_models/prediction_rasters/maxent_mean.tif'
+me_pred_raster1 <- brick(str_name)
+plot(me_pred_raster1[[c(1)]],  
+     main="State model",
+     axes = FALSE, box = FALSE, legend=FALSE,
+     breaks = c(seq(me_pred_raster1@data@min, me_pred_raster1@data@max, (me_pred_raster1@data@max-me_pred_raster1@data@min)/8)), col = colors2,
+     cex.main = 2, cex.lab=2, zlim=range(c(me_pred_raster1@data@min,me_pred_raster1@data@max))
+)
+title(ylab = "Maximum Entropy\n", adj=0.5, line=-0.59, cex.lab=1.8)
+title("A",adj=0.01, cex.main=1.8)
+
+str_name <-'~/Desktop/r&r_predictions/tenagophila_sp_models/prediction_rasters/maxent_national_cropped.tif'
+me_pred_raster2 <- brick(str_name)
+plot(me_pred_raster2[[c(1)]],  
+     main="Cropped national model",
+     axes = FALSE, box = FALSE, legend=FALSE,
+     breaks = c(seq(me_pred_raster2@data@min, me_pred_raster2@data@max, (me_pred_raster2@data@max-me_pred_raster2@data@min)/8)), col = colors2,
+     cex.main = 2, cex.lab=2, zlim=range(c(me_pred_raster2@data@min,me_pred_raster2@data@max))
+)
+title("B",adj=0.01, cex.main=1.8)
+
+str_name <-'~/Desktop/r&r_predictions/tenagophila_sp_models/prediction_rasters/rf_mean.tif'
+me_pred_raster3 <- brick(str_name)
+plot(me_pred_raster3[[c(1)]],  
+     axes = FALSE, box = FALSE, legend=FALSE,
+     breaks = c(seq(me_pred_raster3@data@min, me_pred_raster3@data@max, (me_pred_raster3@data@max-me_pred_raster3@data@min)/8)), col = colors2,
+     cex.main = 2, cex.lab=2, zlim=range(c(me_pred_raster3@data@min,me_pred_raster3@data@max))
+)
+title(ylab = "Random Forest\n", adj=0.5, line=-0.59, cex.lab=1.8)
+title("C",adj=0.01, cex.main=1.8)
+
+str_name <-'~/Desktop/r&r_predictions/tenagophila_sp_models/prediction_rasters/rf_national_cropped.tif'
+rf_pred_raster1 <- brick(str_name)
+raster::plot(rf_pred_raster1[[c(1)]],  
+             axes = FALSE, box = FALSE, legend=FALSE,
+             breaks = c(seq(rf_pred_raster1@data@min, rf_pred_raster1@data@max, (rf_pred_raster1@data@max-rf_pred_raster1@data@min)/8)), col = colors2,
+             cex.main = 2, cex.lab=2, zlim=range(c(rf_pred_raster1@data@min,rf_pred_raster1@data@max))
+)
+title("D",adj=0.01, cex.main=1.8)
+
+str_name <-'~/Desktop/r&r_predictions/tenagophila_sp_models/prediction_rasters/brt_mean.tif'
+rf_pred_raster2 <- brick(str_name)
+plot(rf_pred_raster2[[c(1)]],
+     axes = FALSE, box = FALSE, legend=FALSE,
+     breaks = c(seq(rf_pred_raster2@data@min, rf_pred_raster2@data@max, (rf_pred_raster2@data@max-rf_pred_raster2@data@min)/8)), col = colors2,
+     cex.main = 2, cex.lab=2, zlim=range(c(rf_pred_raster2@data@min,rf_pred_raster2@data@max))
+)
+title(ylab = "Boosted Regression Tree\n", adj=0.5, line=-0.59, cex.lab=1.8)
+title("E",adj=0.01, cex.main=1.8)
+
+str_name <-'~/Desktop/r&r_predictions/tenagophila_sp_models/prediction_rasters/brt_national_cropped.tif'
+rf_pred_raster3 <- brick(str_name)
+plot(rf_pred_raster3[[c(1)]],
+     axes = FALSE, box = FALSE, legend=FALSE,
+     breaks = c(seq(rf_pred_raster3@data@min, rf_pred_raster3@data@max, (rf_pred_raster3@data@max-rf_pred_raster3@data@min)/8)), col = colors2,
+     cex.main = 2, cex.lab=2, zlim=range(c(rf_pred_raster3@data@min,rf_pred_raster3@data@max))
+)
+title("F",adj=0.01, cex.main=1.8)
+dev.off()
+#---------------------------------------------------------------------------------------------------------
+## Minas Gerais Glabrata
+pdf("~/Desktop/r&r_figures/Fig4glab.pdf", width=8, height=9)
+colors2 <- c(RColorBrewer::brewer.pal(9, "BuPu"))[2:9]
+par(mar = c(0, 0, 0, 0))
+par(mfrow=c(3,2), mar = c(1,3,2,0))
+
+str_name <-'~/Desktop/r&r_predictions/glabrata_mg_models/prediction_rasters/maxent_mean.tif'
+me_pred_raster1 <- brick(str_name)
+plot(me_pred_raster1[[c(1)]],  
+     main="State model",
+     axes = FALSE, box = FALSE, legend=FALSE,
+     breaks = c(seq(me_pred_raster1@data@min, me_pred_raster1@data@max, (me_pred_raster1@data@max-me_pred_raster1@data@min)/8)), col = colors2,
+     cex.main = 2, cex.lab=2, zlim=range(c(me_pred_raster1@data@min,me_pred_raster1@data@max))
+)
+title(ylab = "Maximum Entropy\n", adj=0.5, line=-0.59, cex.lab=1.8)
+title("A",adj=0.01, cex.main=1.8)
+
+str_name <-'~/Desktop/r&r_predictions/glabrata_mg_models/prediction_rasters/maxent_national_cropped.tif'
+me_pred_raster2 <- brick(str_name)
+plot(me_pred_raster2[[c(1)]],  
+     main="Cropped national model",
+     axes = FALSE, box = FALSE, legend=FALSE,
+     breaks = c(seq(me_pred_raster2@data@min, me_pred_raster2@data@max, (me_pred_raster2@data@max-me_pred_raster2@data@min)/8)), col = colors2,
+     cex.main = 2, cex.lab=2, zlim=range(c(me_pred_raster2@data@min,me_pred_raster2@data@max))
+)
+title("B",adj=0.01, cex.main=1.8)
+
+str_name <-'~/Desktop/r&r_predictions/glabrata_mg_models/prediction_rasters/rf_mean.tif'
+me_pred_raster3 <- brick(str_name)
+plot(me_pred_raster3[[c(1)]],  
+     axes = FALSE, box = FALSE, legend=FALSE,
+     breaks = c(seq(me_pred_raster3@data@min, me_pred_raster3@data@max, (me_pred_raster3@data@max-me_pred_raster3@data@min)/8)), col = colors2,
+     cex.main = 2, cex.lab=2, zlim=range(c(me_pred_raster3@data@min,me_pred_raster3@data@max))
+)
+title(ylab = "Random Forest\n", adj=0.5, line=-0.59, cex.lab=1.8)
+title("C",adj=0.01, cex.main=1.8)
+
+str_name <-'~/Desktop/r&r_predictions/glabrata_mg_models/prediction_rasters/rf_national_cropped.tif'
+rf_pred_raster1 <- brick(str_name)
+raster::plot(rf_pred_raster1[[c(1)]],  
+             axes = FALSE, box = FALSE, legend=FALSE,
+             breaks = c(seq(rf_pred_raster1@data@min, rf_pred_raster1@data@max, (rf_pred_raster1@data@max-rf_pred_raster1@data@min)/8)), col = colors2,
+             cex.main = 2, cex.lab=2, zlim=range(c(rf_pred_raster1@data@min,rf_pred_raster1@data@max))
+)
+title("D",adj=0.01, cex.main=1.8)
+
+str_name <-'~/Desktop/r&r_predictions/glabrata_mg_models/prediction_rasters/brt_mean.tif'
+rf_pred_raster2 <- brick(str_name)
+plot(rf_pred_raster2[[c(1)]],
+     axes = FALSE, box = FALSE, legend=FALSE,
+     breaks = c(seq(rf_pred_raster2@data@min, 0.45, (0.45-rf_pred_raster2@data@min)/8), rf_pred_raster2@data@max), col = colors2[c(1:8,8)],
+     cex.main = 2, cex.lab=2, zlim=range(c(rf_pred_raster2@data@min,rf_pred_raster2@data@max))
+)
+title(ylab = "Boosted Regression Tree\n", adj=0.5, line=-0.59, cex.lab=1.8)
+title("E",adj=0.01, cex.main=1.8)
+
+str_name <-'~/Desktop/r&r_predictions/glabrata_mg_models/prediction_rasters/brt_national_cropped.tif'
+rf_pred_raster3 <- brick(str_name)
+plot(rf_pred_raster3[[c(1)]],
+     axes = FALSE, box = FALSE, legend=FALSE,
+     breaks = c(seq(rf_pred_raster3@data@min, rf_pred_raster3@data@max, (rf_pred_raster3@data@max-rf_pred_raster3@data@min)/8)), col = colors2,
+     cex.main = 2, cex.lab=2, zlim=range(c(rf_pred_raster3@data@min,rf_pred_raster3@data@max))
+)
+title("F",adj=0.01, cex.main=1.8)
+dev.off()
+```
+
+```{r, Table 4, eval=T}
+correlation_function <- function(rasters_dir1, rasters_dir2, model_type){
+  cor_df <- c()
+  cropped_rasters <- paste(rasters_dir1,"cropped_rasters",sep="")
+  cropped_rasters <- list.files(path=cropped_rasters, pattern=model_type, all.files=FALSE, full.names=TRUE,recursive=TRUE)
+  state_rasters <- paste(rasters_dir2,"prediction_rasters",sep="")
+  state_rasters <- list.files(path=state_rasters, pattern=model_type, all.files=FALSE, full.names=TRUE,recursive=TRUE)
+  state_rasters <- state_rasters[2:11] #throw out mean raster and national cropped
+  for(ii in 1:100){
+    for(i in 1:10){
+    set.seed(ii)
+    state_raster <- raster(state_rasters[i])
+    state_raster_masked <- mask(x = state_raster, mask = sp_shapefile) #change shapefile!
+    state_raster_cropped <- crop(state_raster_masked, sp_shapefile)
+    cor <- cor(sample(values(raster(cropped_rasters[i]))),
+               sample(values(state_raster_cropped)),
+               use = "na.or.complete")
+    cor_df <- rbind(cor_df,cor)
+    }
+  }
+  out_name <- "~/Desktop/table4/"
+  write.csv(cor_df, paste(out_name,"tena_",model_type,"_corr_permutations.csv",sep=""))
+}
+
+model_types <- c("rf", "maxent", "brt")
+for(k in 1:length(model_types)){
+  correlation_function("~/Desktop/r&r_predictions/tenagophila_national_models/", "~/Desktop/r&r_predictions/tenagophila_sp_models/",model_types[k])
+}
+
+ci.high <- function(x){
+  mean(x)+1.96*(sd(x)/sqrt(10))
+}
+ci.low <- function(x){
+  mean(x)-1.96*(sd(x)/sqrt(10))
+}
+
+glab_me_corr <- as.data.frame(read.csv("~/Desktop/table4/glabrata_maxent_corr.csv"))
+mean(glab_me_corr[,2])
+ci.high(glab_me_corr[,2])
+ci.low(glab_me_corr[,2])
+glab_me_corr_perms <- as.data.frame(read.csv("~/Desktop/table4/glab_maxent_corr_permutations.csv"))
+table((glab_me_corr[,2]) > glab_me_corr_perms[c(1:1000),2])
+t.test(glab_me_corr[,2], glab_me_corr_perms[c(1:1000),2])
+
+glab_rf_corr <- as.data.frame(read.csv("~/Desktop/table4/glabrata_rf_corr.csv"))
+mean(glab_rf_corr[,2])
+ci.high(glab_rf_corr[,2])
+ci.low(glab_rf_corr[,2])
+glab_rf_corr_perms <- as.data.frame(read.csv("~/Desktop/table4/glab_rf_corr_permutations.csv"))
+table((glab_rf_corr[,2]) > glab_rf_corr_perms[c(1:1000),2])
+t.test(glab_rf_corr[,2], glab_rf_corr_perms[c(1:1000),2])
+
+glab_brt_corr <- as.data.frame(read.csv("~/Desktop/table4/glabrata_brt_corr.csv"))
+mean(glab_brt_corr[2:10,2])
+ci.high(glab_brt_corr[,2])
+ci.low(glab_brt_corr[,2])
+glab_brt_corr_perms <- as.data.frame(read.csv("~/Desktop/table4/glab_brt_corr_permutations.csv"))
+table((glab_brt_corr[,2]) > glab_brt_corr_perms[c(1:1000),2])
+t.test(glab_brt_corr[,2], glab_brt_corr_perms[c(1:1000),2])
+
+stram_me_corr <- as.data.frame(read.csv("~/Desktop/table4/straminea_maxent_corr.csv"))
+mean(stram_me_corr[,2])
+ci.high(stram_me_corr[,2])
+ci.low(stram_me_corr[,2])
+stram_me_corr_perms <- as.data.frame(read.csv("~/Desktop/table4/stram_maxent_corr_permutations.csv"))
+table((stram_me_corr[,2]) > stram_me_corr_perms[c(1:1000),2])
+t.test(stram_me_corr[,2], stram_me_corr_perms[c(1:1000),2])
+
+stram_rf_corr <- as.data.frame(read.csv("~/Desktop/table4/straminea_rf_corr.csv"))
+mean(stram_rf_corr[,2])
+ci.high(stram_rf_corr[,2])
+ci.low(stram_rf_corr[,2])
+stram_rf_corr_perms <- as.data.frame(read.csv("~/Desktop/table4/stram_rf_corr_permutations.csv"))
+table((stram_rf_corr[,2]) > stram_rf_corr_perms[c(1:1000),2])
+t.test(stram_rf_corr[,2], stram_rf_corr_perms[c(1:1000),2])
+
+stram_brt_corr <- as.data.frame(read.csv("~/Desktop/table4/straminea_brt_corr.csv"))
+mean(stram_brt_corr[,2])
+ci.high(stram_brt_corr[,2])
+ci.low(stram_brt_corr[,2])
+stram_brt_corr_perms <- as.data.frame(read.csv("~/Desktop/table4/stram_brt_corr_permutations.csv"))
+table((stram_brt_corr[,2]) > stram_brt_corr_perms[c(1:1000),2])
+t.test(stram_brt_corr[,2], stram_brt_corr_perms[c(1:1000),2])
+
+tenag_me_corr <- as.data.frame(read.csv("~/Desktop/table4/tenagophila_maxent_corr.csv"))
+mean(tenag_me_corr[,2])
+ci.high(tenag_me_corr[,2])
+ci.low(tenag_me_corr[,2])
+tenag_me_corr_perms <- as.data.frame(read.csv("~/Desktop/table4/tena_maxent_corr_permutations.csv"))
+table((tenag_me_corr[,2]) > tenag_me_corr_perms[c(1:1000),2])
+t.test(tenag_me_corr[,2], tenag_me_corr_perms[c(1:1000),2])
+
+tenag_rf_corr <- as.data.frame(read.csv("~/Desktop/table4/tenagophila_rf_corr.csv"))
+mean(tenag_rf_corr[,2])
+ci.high(tenag_rf_corr[,2])
+ci.low(tenag_rf_corr[,2])
+tenag_rf_corr_perms <- as.data.frame(read.csv("~/Desktop/table4/tena_rf_corr_permutations.csv"))
+table((tenag_rf_corr[,2]) > tenag_rf_corr_perms[c(1:1000),2])
+t.test(tenag_rf_corr[,2], tenag_rf_corr_perms[c(1:1000),2])
+
+tenag_brt_corr <- as.data.frame(read.csv("~/Desktop/table4/tenagophila_brt_corr.csv"))
+mean(tenag_brt_corr[,2])
+ci.high(tenag_brt_corr[,2])
+ci.low(tenag_brt_corr[,2])
+tenag_brt_corr_perms <- as.data.frame(read.csv("~/Desktop/table4/tena_rf_corr_permutations.csv"))
+table((tenag_brt_corr[,2]) > tenag_brt_corr_perms[c(1:1000),2])
+t.test(tenag_brt_corr[,2], tenag_brt_corr_perms[c(1:1000),2])
+
+#permutation based p-value
+# Generating data
+set.seed(2021)
+d <- as.data.frame(cbind(rnorm(1:20, 500, 50), c(rep(0, 10), rep(1, 10))))
+treatment <- d$V2
+outcome <- d$V1
+
+#Difference in means
+original <- diff(tapply(outcome, treatment, mean))
+mean(outcome[treatment==1])-mean(outcome[treatment==0])
+
+#Permutation test
+permutation.test <- function(treatment, outcome, n){
+  distribution=c()
+  result=0
+  for(i in 1:n){
+    distribution[i]=diff(by(outcome, sample(treatment, length(treatment), FALSE), mean))
+  }
+  result=sum(abs(distribution) >= abs(original))/(n)
+  return(list(result, distribution))
+}
+
+test1 <- permutation.test(treatment, outcome, 10000)
+hist(test1[[2]], breaks=50, col='grey', main="Permutation Distribution", las=1, xlab='')
+abline(v=original, lwd=3, col="red")
+
+test1[[1]]
+
+#Compare to t-test
+t.test(outcome~treatment)
+```
+
+```{r, Figure 5, eval=T}
+#---------------------------------------------------------------------------------------------------------
+## Figure 5
+#---------------------------------------------------------------------------------------------------------
+#Straminea National Prep
+stram_brt_national_pdp$Model <- c("BRT")
+stram_brt_national_pdp$yhat <- scale(stram_brt_national_pdp$yhat)
+stram_rf_national_pdp$Model <- c("RF")
+stram_rf_national_pdp$yhat <- -scale(stram_rf_national_pdp$yhat)
+stram_maxent_national_pdp$yhat <- ifelse(is.finite(stram_maxent_national_pdp$yhat), stram_maxent_national_pdp$yhat, NA)
+stram_maxent_national_pdp$Model <- c("MaxEnt")
+stram_maxent_national_pdp$yhat <- scale(stram_maxent_national_pdp$yhat)
+pdp_combo <- rbind(stram_brt_national_pdp, stram_rf_national_pdp, stram_maxent_national_pdp)
+pdp_combo$Model <- factor(pdp_combo$Model, levels = c("MaxEnt", "RF", "BRT"),
+                          ordered = TRUE)
+pdp_combo$Scale <- c("B. straminea\nNational")
+#---------------------------------------------------------------------------------------------------------
+#Straminea MG Prep
+stram_brt_mg_pdp$Model <- c("BRT")
+stram_brt_mg_pdp$yhat <- scale(stram_brt_mg_pdp$yhat)
+stram_rf_mg_pdp$Model <- c("RF")
+stram_rf_mg_pdp$yhat <- -scale(stram_rf_mg_pdp$yhat)
+stram_maxent_mg_pdp$yhat <- ifelse(is.finite(stram_maxent_mg_pdp$yhat), stram_maxent_mg_pdp$yhat, NA)
+stram_maxent_mg_pdp$Model <- c("MaxEnt")
+stram_maxent_mg_pdp$yhat <- scale(stram_maxent_mg_pdp$yhat)
+pdp_combo1 <- rbind(stram_brt_mg_pdp, stram_rf_mg_pdp, stram_maxent_mg_pdp)
+pdp_combo1$Model <- factor(pdp_combo1$Model, levels = c("MaxEnt", "RF", "BRT"),
+                          ordered = TRUE)
+pdp_combo1$Scale <- c("B. straminea\nMinas Gerais")
+#---------------------------------------------------------------------------------------------------------
+#Tenagophila National Prep
+tenag_brt_national_pdp$Model <- c("BRT")
+tenag_brt_national_pdp$yhat <- scale(tenag_brt_national_pdp$yhat)
+tenag_rf_national_pdp$Model <- c("RF")
+tenag_rf_national_pdp$yhat <- -scale(tenag_rf_national_pdp$yhat)
+tenag_maxent_national_pdp$yhat <- ifelse(is.finite(tenag_maxent_national_pdp$yhat), tenag_maxent_national_pdp$yhat, NA)
+tenag_maxent_national_pdp$Model <- c("MaxEnt")
+tenag_maxent_national_pdp$yhat <- scale(tenag_maxent_national_pdp$yhat)
+pdp_combo2 <- rbind(tenag_brt_national_pdp, tenag_rf_national_pdp, tenag_maxent_national_pdp)
+pdp_combo2$Model <- factor(pdp_combo2$Model, levels = c("MaxEnt", "RF", "BRT"),
+                           ordered = TRUE)
+pdp_combo2$Scale <- c("B. tenagophila\nNational")
+#---------------------------------------------------------------------------------------------------------
+#Tenagophila SP Prep
+tenag_brt_mg_pdp$Model <- c("BRT")
+tenag_brt_mg_pdp$yhat <- scale(tenag_brt_mg_pdp$yhat)
+tenag_rf_mg_pdp$Model <- c("RF")
+tenag_rf_mg_pdp$yhat <- -scale(tenag_rf_mg_pdp$yhat)
+tenag_maxent_mg_pdp$yhat <- ifelse(is.finite(tenag_maxent_mg_pdp$yhat), tenag_maxent_mg_pdp$yhat, NA)
+tenag_maxent_mg_pdp$Model <- c("MaxEnt")
+tenag_maxent_mg_pdp$yhat <- scale(tenag_maxent_mg_pdp$yhat)
+pdp_combo3 <- rbind(tenag_brt_mg_pdp, tenag_rf_mg_pdp, tenag_maxent_mg_pdp)
+pdp_combo3$Model <- factor(pdp_combo3$Model, levels = c("MaxEnt", "RF", "BRT"),
+                           ordered = TRUE)
+pdp_combo3$Scale <- c("B. tenagophila\nS?o Paulo")
+#---------------------------------------------------------------------------------------------------------
+#Glabrata National Prep
+glab_brt_national_pdp$Model <- c("BRT")
+glab_brt_national_pdp$yhat <- scale(glab_brt_national_pdp$yhat)
+glab_rf_national_pdp$Model <- c("RF")
+glab_rf_national_pdp$yhat <- scale(-glab_rf_national_pdp$yhat)
+glab_maxent_national_pdp$yhat <- ifelse(is.finite(glab_maxent_national_pdp$yhat), glab_maxent_national_pdp$yhat, NA)
+glab_maxent_national_pdp$Model <- c("MaxEnt")
+glab_maxent_national_pdp$yhat <- scale(glab_maxent_national_pdp$yhat)
+pdp_combo <- rbind(glab_brt_national_pdp, glab_rf_national_pdp, glab_maxent_national_pdp)
+pdp_combo$Model <- factor(pdp_combo$Model, levels = c("MaxEnt", "RF", "BRT"),
+                          ordered = TRUE)
+pdp_combo$Scale <- c("B. glabrata\nNational")
+#---------------------------------------------------------------------------------------------------------
+#Glabrata MG Prep
+glab_brt_mg_pdp$Model <- c("BRT")
+glab_brt_mg_pdp$yhat <- scale(glab_brt_mg_pdp$yhat)
+glab_rf_mg_pdp$Model <- c("RF")
+glab_rf_mg_pdp$yhat <- scale(-glab_rf_mg_pdp$yhat)
+glab_maxent_mg_pdp$yhat <- ifelse(is.finite(glab_maxent_mg_pdp$yhat), glab_maxent_mg_pdp$yhat, NA)
+glab_maxent_mg_pdp$Model <- c("MaxEnt")
+glab_maxent_mg_pdp$yhat <- scale(glab_maxent_mg_pdp$yhat)
+pdp_combo1 <- rbind(glab_brt_mg_pdp, glab_rf_mg_pdp, glab_maxent_mg_pdp)
+pdp_combo1$Model <- factor(pdp_combo1$Model, levels = c("MaxEnt", "RF", "BRT"),
+                           ordered = TRUE)
+pdp_combo1$Scale <- c("B. glabrata\nMinas Gerais")
+
+#---------------------------------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------------
+# Full Fig 5
+pdp_all <- rbind(pdp_combo, pdp_combo1, pdp_combo2, pdp_combo3)
+pdp_all$Scale <- factor(pdp_all$Scale, levels = c("B. glabrata\nNational","B. glabrata\nMinas Gerais","B. tenagophila\nNational","B. tenagophila\nS?o Paulo"),
+                          ordered = TRUE)
+unique(pdp_all$variable)
+save_small <- c("clay", "bio11_temp", "distance_high_pop")
+pdp_all_small <- pdp_all[(pdp_all$variable %in% save_small),]
+
+fig.5 <- pdp_all_small %>%
+  mutate(variable = replace(variable, variable == "bio11_temp", "C) Temperature\nColdest Quarter"),
+         variable = replace(variable, variable == "distance_high_pop", "A) Distance to High\nPopulation Density"),
+         variable = replace(variable, variable == "clay", "B) Soil Clay\nPercentage")) %>%
+  ggplot() + 
+  stat_smooth(aes(x=value, y=yhat, color=Model), method='loess', size=1, se=FALSE) +
+  facet_grid(Scale~variable, scales = "free_x", switch = 'y') + #ncol=1, scales='free'
+  scale_color_manual(values=c('#73D2DE', '#FFBC42', '#D81159'),name="Model Type") + 
+  theme_minimal() +
+  ylim(-2.1,2) +
+  labs(y= "Marginal Change in Prediction", x = "Predictor Value")+
+  theme(plot.title = element_text(hjust=0.5, size=16),
+        plot.subtitle = element_text(hjust=0.5, size=22),
+        axis.title=element_text(size=16),
+        axis.title.y=element_text(face="bold"),
+        axis.text.y=element_text(size=10),
+        axis.title.x=element_text(face="bold"),
+        axis.text.x=element_text(size=10),
+        axis.text = element_text(size=12),
+        legend.text=element_text(size=13),
+        legend.title=element_text(size=14),
+        legend.position = "bottom",
+        panel.border = element_rect(colour='black', fill=NA),
+        strip.background = element_rect(colour="white", fill="white"),
+        strip.text.x = element_text(size = 12),
+        strip.text.y = element_text(size = 12),
+        strip.placement = "outside") 
+fig.5
+
+ggsave("Fig5.pdf", plot=fig.5, path="~/Desktop/r&r_figures/", width=8, height=9, units="in", device = "pdf")
+```
+
+```{r, Figure 6, eval=T}
+#---------------------------------------------------------------------------------------------------------
+# Figure 6: Variable importance attributed to land use/land cover (LULC) variables increases 
+#   at smaller scales. 
+#---------------------------------------------------------------------------------------------------------
+scale_this <- function(x){
+  (x) / sum(x, na.rm=TRUE)
+}
+
+bioclim_vars <- c("clay", "pH", "hnd", "soilWater", "distance_high_pop", "ag_mosiac")
+bioclim_vars <- c("bio17_prec", "bio16_prec", "bio4_temp_", "bio11_temp", "pH", 
+                  "clay", "hnd", "soilWater")
+
+rf_vimp_national_straminea <- read.csv("~/Desktop/r&r_model_runs/straminea_national_models/rf_imp_df.csv")
+rf_vimp_sudeste_straminea <- read.csv("~/Desktop/r&r_model_runs/straminea_sudeste_models/rf_imp_df.csv")
+rf_vimp_mg_straminea <- read.csv("~/Desktop/r&r_model_runs/straminea_mg_models/rf_imp_df.csv")
+
+maxent_vimp_national_straminea <- read.csv("~/Desktop/r&r_model_runs/straminea_national_models/maxent_imp_df.csv")
+maxent_vimp_sudeste_straminea <- read.csv("~/Desktop/r&r_model_runs/straminea_sudeste_models/maxent_imp_df.csv")
+maxent_vimp_mg_straminea <- read.csv("~/Desktop/r&r_model_runs/straminea_mg_models/maxent_imp_df.csv")
+
+brt_vimp_national_straminea <- read.csv("~/Desktop/r&r_model_runs/straminea_national_models/brt_imp_df.csv")
+brt_vimp_sudeste_straminea <- read.csv("~/Desktop/r&r_model_runs/straminea_sudeste_models/brt_imp_df.csv")
+brt_vimp_mg_straminea <- read.csv("~/Desktop/r&r_model_runs/straminea_mg_models/brt_imp_df.csv")
+
+rf_vimp_national_tenagophila <- read.csv("~/Desktop/r&r_model_runs/tenagophila_national_models/rf_imp_df.csv")
+rf_vimp_sudeste_tenagophila <- read.csv("~/Desktop/r&r_model_runs/tenagophila_sudeste_models/rf_imp_df.csv")
+rf_vimp_sp_tenagophila <- read.csv("~/Desktop/r&r_model_runs/tenagophila_sp_models/rf_imp_df.csv")
+
+maxent_vimp_national_tenagophila <- read.csv("~/Desktop/r&r_model_runs/tenagophila_national_models/maxent_imp_df.csv")
+maxent_vimp_sudeste_tenagophila <- read.csv("~/Desktop/r&r_model_runs/tenagophila_sudeste_models/maxent_imp_df.csv")
+maxent_vimp_sp_tenagophila <- read.csv("~/Desktop/r&r_model_runs/tenagophila_sp_models/maxent_imp_df.csv")
+
+brt_vimp_national_tenagophila <- read.csv("~/Desktop/r&r_model_runs/tenagophila_national_models/brt_imp_df.csv")
+brt_vimp_sudeste_tenagophila <- read.csv("~/Desktop/r&r_model_runs/tenagophila_sudeste_models/brt_imp_df.csv")
+brt_vimp_sp_tenagophila <- read.csv("~/Desktop/r&r_model_runs/tenagophila_sp_models/brt_imp_df.csv")
+
+rf_vimp_national_glabrata <- read.csv("~/Desktop/r&r_model_runs/glabrata_national_models/rf_imp_df.csv")
+rf_vimp_sudeste_glabrata <- read.csv("~/Desktop/r&r_model_runs/glabrata_sudeste_models/rf_imp_df.csv")
+rf_vimp_mg_glabrata <- read.csv("~/Desktop/r&r_model_runs/glabrata_mg_models/rf_imp_df.csv")
+
+maxent_vimp_national_glabrata <- read.csv("~/Desktop/r&r_model_runs/glabrata_national_models/maxent_imp_df.csv")
+maxent_vimp_sudeste_glabrata <- read.csv("~/Desktop/r&r_model_runs/glabrata_sudeste_models/maxent_imp_df.csv")
+maxent_vimp_mg_glabrata <- read.csv("~/Desktop/r&r_model_runs/glabrata_mg_models/maxent_imp_df.csv")
+
+brt_vimp_national_glabrata <- read.csv("~/Desktop/r&r_model_runs/glabrata_national_models/brt_imp_df.csv")
+brt_vimp_sudeste_glabrata <- read.csv("~/Desktop/r&r_model_runs/glabrata_sudeste_models/brt_imp_df.csv")
+brt_vimp_mg_glabrata <- read.csv("~/Desktop/r&r_model_runs/glabrata_mg_models/brt_imp_df.csv")
+
+#build function to get bioclim/nonbioclim props
+vimp_props <- function(importance_dataset){
+  importance_dataset <- importance_dataset %>%
+    group_by(iter) %>%
+    mutate(scaled_imp = scale_this(Importance)) %>%
+    ungroup() %>%
+    group_by(Variable) %>%
+    mutate(mean_imp = mean(scaled_imp))
+  importance_dataset <- importance_dataset[1:13,]
+  prop_output <- sum(importance_dataset$mean_imp[-which(importance_dataset$Variable %in% bioclim_vars)])
+  prop_output
+}
+
+vimp_props_df <- data.frame(c(vimp_props(rf_vimp_national_straminea), vimp_props(rf_vimp_sudeste_straminea), vimp_props(rf_vimp_mg_straminea)),
+                            c(vimp_props(maxent_vimp_national_straminea), vimp_props(maxent_vimp_sudeste_straminea), vimp_props(maxent_vimp_mg_straminea)),
+                            c(vimp_props(brt_vimp_national_straminea), vimp_props(brt_vimp_sudeste_straminea), vimp_props(brt_vimp_mg_straminea)),
+                            c("National", "Sudeste", "Minas Gerais"))
+colnames(vimp_props_df) <- c("RF", "MaxEnt", "BRT", "x")
+vimp_props_df <- vimp_props_df %>% mutate(x = factor(x, levels = c("National","Sudeste", "Minas Gerais")))
+
+fig6a <- ggplot(vimp_props_df, aes(x=x, group = 1)) + 
+  geom_line(aes(y=RF), color="#FFBC42") +
+  geom_line(aes(y=MaxEnt), color="#73D2DE") +
+  geom_line(aes(y=BRT), color="#D81159") +
+  ylab("Mean Prop LULC\nVariable Importance") +
+  xlab("Model Geographic Extent") + 
+  ggtitle("B. straminea") +
+  theme_bw()+
+  theme(plot.title = element_text(hjust=0.5, size=14, face = "italic"),
+        plot.subtitle = element_text(hjust=0.5, size=10),
+        axis.title=element_text(size=10),
+        axis.text = element_text(size=10),
+        axis.title.x = element_blank(),
+        legend.text=element_text(size=12),
+        legend.title=element_text(size=12),
+        legend.position = "none")
+
+tenagophila_vimp_props_df <- data.frame(c(vimp_props(rf_vimp_national_tenagophila), vimp_props(rf_vimp_sudeste_tenagophila), vimp_props(rf_vimp_sp_tenagophila)),
+                                        c(vimp_props(maxent_vimp_national_tenagophila), vimp_props(maxent_vimp_sudeste_tenagophila), vimp_props(maxent_vimp_sp_tenagophila)),
+                                        c(vimp_props(brt_vimp_national_tenagophila), vimp_props(brt_vimp_sudeste_tenagophila), vimp_props(brt_vimp_sp_tenagophila)),
+                                        c("National", "Sudeste", "São Paulo"))
+colnames(tenagophila_vimp_props_df) <- c("RF", "MaxEnt", "BRT", "x")
+tenagophila_vimp_props_df <- tenagophila_vimp_props_df %>% mutate(x = factor(x, levels = c("National","Sudeste", "S?o Paulo")))
+
+fig6b <- ggplot(tenagophila_vimp_props_df, aes(x=x, group = 1)) + 
+  geom_line(aes(y=RF), color="#FFBC42") +
+  geom_line(aes(y=MaxEnt), color="#73D2DE") +
+  geom_line(aes(y=BRT), color="#D81159") +
+  ylab("Mean Prop LULC\nVariable Impportance") +
+  xlab("Model Geographic Extent") + 
+  ggtitle("B. tenagophila") +
+  theme_bw()+
+  theme(plot.title = element_text(hjust=0.5, size=14, face = "italic"),
+        plot.subtitle = element_text(hjust=0.5, size=10),
+        axis.title=element_text(size=10),
+        axis.text = element_text(size=10),
+        axis.title.x = element_blank(),
+        legend.text=element_text(size=12),
+        legend.title=element_text(size=12),
+        legend.position = "none")
+
+vimp_props_df <- data.frame(c(vimp_props(rf_vimp_national_glabrata), vimp_props(rf_vimp_sudeste_glabrata), vimp_props(rf_vimp_mg_glabrata)),
+                            c(vimp_props(maxent_vimp_national_glabrata), vimp_props(maxent_vimp_sudeste_glabrata), vimp_props(maxent_vimp_mg_glabrata)),
+                            c(vimp_props(brt_vimp_national_glabrata), vimp_props(brt_vimp_sudeste_glabrata), vimp_props(brt_vimp_mg_glabrata)),
+                            c("National", "Sudeste", "Minas Gerais"))
+colnames(vimp_props_df) <- c("RF", "MaxEnt", "BRT", "x")
+vimp_props_df <- vimp_props_df %>% mutate(x = factor(x, levels = c("National","Sudeste", "Minas Gerais")))
+
+fig6c <- ggplot(vimp_props_df, aes(x=x, group = 1)) + 
+  geom_line(aes(y=RF), color="#FFBC42") +
+  geom_line(aes(y=MaxEnt), color="#73D2DE") +
+  geom_line(aes(y=BRT), color="#D81159") +
+  ylab("Mean Prop LULC\nVariable Importance") +
+  xlab("Model Geographic Extent") + 
+  ggtitle("B. glabrata") +
+  theme_bw()+
+  theme(plot.title = element_text(hjust=0.5, size=14, face = "italic"),
+        plot.subtitle = element_text(hjust=0.5, size=10),
+        axis.title=element_text(size=10),
+        axis.text = element_text(size=10),
+        axis.title.x = element_blank(),
+        legend.text=element_text(size=12),
+        legend.title=element_text(size=12),
+        legend.position = "bottom")
+#legend <- get_legend(fig5c)
+#---------------------------------------------------------------------------------------------------------
+# Full Figure 6
+fig6 <- grid.arrange(fig6c, fig6a, fig6b, legend,                            
+                     ncol = 1, nrow = 4,
+                     layout_matrix = cbind(c(1,2,3,4)), heights=c(5,5,5,1))
+
+fig6 <- as_ggplot(fig6) +                                
+  draw_plot_label(label = c("A", "B", "C"), size = 14,
+                  x = c(0.05, 0.05, 0.05), y = c(1, 0.69, 0.38)) 
+fig6
+
+ggsave("Fig6.pdf", plot=fig6, path="~/Desktop/r&r_figures/", width=6, height=7, units="in", device = "pdf")
+```
+
+```{r, Figure 7, eval=T}
+#---------------------------------------------------------------------------------------------------------
+# Figure 6: GBIF v expert-collected data suite of maps for Sao Paulo
+#---------------------------------------------------------------------------------------------------------
+pdf("~/Desktop/r&r_figures/Fig7.pdf", width=12, height=9)
+zlim <- range(c(0,0.4))
+breakpoints <- c(seq(0, 0.4, 0.125))
+colors2 <- c(RColorBrewer::brewer.pal(9, "BuPu"))[2:9]
+
+par(mar = c(0, 0, 0, 0))
+par(mfrow=c(3,3), mar = c(1,3,2,0))
+
+str_name <-'~/Desktop/r&r_predictions/tenagophila_sp_expert_models/prediction_rasters/maxent_mean.tif'
+me_pred_raster1 <- brick(str_name)
+plot(me_pred_raster1[[c(1)]],  
+     main="Expert Collected",
+     axes = FALSE, box = FALSE, legend=FALSE,
+     breaks = c(seq(me_pred_raster1@data@min, me_pred_raster1@data@max, (me_pred_raster1@data@max-me_pred_raster1@data@min)/8)), col = colors2,
+     cex.main = 2, cex.lab=2, zlim=range(c(me_pred_raster1@data@min,me_pred_raster1@data@max))
+)
+title(ylab = "Maximum Entropy\n", adj=0.5, line=-0.59, cex.lab=1.8)
+title("A",adj=0.01, cex.main=1.8)
+
+str_name <-'~/Desktop/r&r_predictions/tenagophila_sp_gbif_models/prediction_rasters/maxent_mean.tif'
+me_pred_raster2 <- brick(str_name)
+plot(me_pred_raster2[[c(1)]],  
+     main="Public GBIF",
+     axes = FALSE, box = FALSE, legend=FALSE,
+     breaks = c(seq(me_pred_raster2@data@min, me_pred_raster2@data@max, (me_pred_raster2@data@max-me_pred_raster2@data@min)/8)), col = colors2,
+     cex.main = 2, cex.lab=2, zlim=range(c(me_pred_raster2@data@min,me_pred_raster2@data@max))
+)
+title("B",adj=0.01, cex.main=1.8)
+
+str_name <-'~/Desktop/r&r_predictions/tenagophila_sp_models/prediction_rasters/maxent_mean.tif'
+me_pred_raster3 <- brick(str_name)
+plot(me_pred_raster3[[c(1)]],  
+     main="Combined",
+     axes = FALSE, box = FALSE, legend=FALSE,
+     breaks = c(seq(me_pred_raster3@data@min, me_pred_raster3@data@max, (me_pred_raster3@data@max-me_pred_raster3@data@min)/8)), col = colors2,
+     cex.main = 2, cex.lab=2, zlim=range(c(me_pred_raster3@data@min,me_pred_raster3@data@max))
+)
+title("C",adj=0.01, cex.main=1.8)
+
+str_name <-'~/Desktop/r&r_predictions/tenagophila_sp_expert_models/prediction_rasters/rf_mean.tif'
+rf_pred_raster1 <- brick(str_name)
+raster::plot(rf_pred_raster1[[c(1)]],  
+             axes = FALSE, box = FALSE, legend=FALSE,
+             breaks = c(seq(rf_pred_raster1@data@min, rf_pred_raster1@data@max, (rf_pred_raster1@data@max-rf_pred_raster1@data@min)/8)), col = colors2,
+             cex.main = 2, cex.lab=2, zlim=range(c(rf_pred_raster1@data@min,rf_pred_raster1@data@max))
+)
+title(ylab = "Random Forest\n", adj=0.5, line=-0.59, cex.lab=1.8)
+title("D",adj=0.01, cex.main=1.8)
+
+str_name <-'~/Desktop/r&r_predictions/tenagophila_sp_gbif_models/prediction_rasters/rf_mean.tif'
+rf_pred_raster2 <- brick(str_name)
+plot(rf_pred_raster2[[c(1)]],
+     axes = FALSE, box = FALSE, legend=FALSE,
+     breaks = c(seq(rf_pred_raster2@data@min, rf_pred_raster2@data@max, (rf_pred_raster2@data@max-rf_pred_raster2@data@min)/8)), col = colors2,
+     cex.main = 2, cex.lab=2, zlim=range(c(rf_pred_raster2@data@min,rf_pred_raster2@data@max))
+)
+title("E",adj=0.01, cex.main=1.8)
+
+str_name <-'~/Desktop/r&r_predictions/tenagophila_sp_models/prediction_rasters/rf_mean.tif'
+rf_pred_raster3 <- brick(str_name)
+plot(rf_pred_raster3[[c(1)]],
+     axes = FALSE, box = FALSE, legend=FALSE,
+     breaks = c(seq(rf_pred_raster3@data@min, rf_pred_raster3@data@max, (rf_pred_raster3@data@max-rf_pred_raster3@data@min)/8)), col = colors2,
+     cex.main = 2, cex.lab=2, zlim=range(c(rf_pred_raster3@data@min,rf_pred_raster3@data@max))
+)
+title("F",adj=0.01, cex.main=1.8)
+
+str_name <-'~/Desktop/r&r_predictions/tenagophila_sp_expert_models/prediction_rasters/brt_mean.tif'
+brt_pred_raster1 <- brick(str_name)
+raster::plot(brt_pred_raster1[[c(1)]],  
+             axes = FALSE, box = FALSE, legend=FALSE,
+             breaks = c(seq(brt_pred_raster1@data@min, brt_pred_raster1@data@max, (brt_pred_raster1@data@max-brt_pred_raster1@data@min)/8)), col = colors2,
+             cex.main = 2, cex.lab=2, zlim=range(c(brt_pred_raster1@data@min,brt_pred_raster1@data@max))
+)
+title(ylab = "Boosted Regression Tree\n", adj=0.5, line=-0.59, cex.lab=1.8)
+title("G",adj=0.01, cex.main=1.8)
+
+str_name <-'~/Desktop/r&r_predictions/tenagophila_sp_gbif_models/prediction_rasters/brt_mean.tif'
+brt_pred_raster2 <- brick(str_name)
+plot(brt_pred_raster2[[c(1)]],
+     axes = FALSE, box = FALSE, legend=FALSE,
+     breaks = c(seq(brt_pred_raster2@data@min, brt_pred_raster2@data@max, (brt_pred_raster2@data@max-brt_pred_raster2@data@min)/8)), col = colors2,
+     cex.main = 2, cex.lab=2, zlim=range(c(brt_pred_raster2@data@min,brt_pred_raster2@data@max))
+)
+title("H",adj=0.01, cex.main=1.8)
+
+str_name <-'~/Desktop/r&r_predictions/tenagophila_sp_models/prediction_rasters/brt_mean.tif'
+brt_pred_raster3 <- brick(str_name)
+plot(brt_pred_raster3[[c(1)]],
+     axes = FALSE, box = FALSE, legend=FALSE,
+     breaks = c(seq(brt_pred_raster3@data@min, brt_pred_raster3@data@max, (brt_pred_raster3@data@max-brt_pred_raster3@data@min)/8)), col = colors2,
+     cex.main = 2, cex.lab=2, zlim=range(c(brt_pred_raster3@data@min,brt_pred_raster3@data@max))
+)
+title("I",adj=0.01, cex.main=1.8)
+dev.off()
+```
+
+```{r, Expert v GBIF AUC in text calc for Fig 7, eval=T}
+#---------------------------------------------------------------------------------------------------------
+# Expert v GBIF AUC Calculations for in text description
+#---------------------------------------------------------------------------------------------------------
+
+tenag_me_sp_expert_baseline_metrics <- read.csv("~/Desktop/r&r_model_runs/tenagophila_sp_expert_models/maxent_baseline_metrics.csv")
+tenag_rf_sp_expert_baseline_metrics <- read.csv("~/Desktop/r&r_model_runs/tenagophila_sp_expert_models/rf_baseline_metrics.csv")
+tenag_brt_sp_expert_baseline_metrics <- read.csv("~/Desktop/r&r_model_runs/tenagophila_sp_expert_models/brt_baseline_metrics.csv")
+tenag_sp_expert_models_auc_df <- c(tenag_me_sp_expert_baseline_metrics$auc, 
+                                   tenag_rf_sp_expert_baseline_metrics$auc, 
+                                   tenag_brt_sp_expert_baseline_metrics$auc)
+mean(tenag_sp_expert_models_auc_df, na.rm = T)
+mean(tenag_sp_expert_models_auc_df)+(sd(tenag_sp_expert_models_auc_df)/sqrt(length(tenag_sp_expert_models_auc_df)))
+mean(tenag_sp_expert_models_auc_df)-(sd(tenag_sp_expert_models_auc_df)/sqrt(length(tenag_sp_expert_models_auc_df)))
+
+tenag_me_sp_gbif_baseline_metrics <- read.csv("~/Desktop/r&r_model_runs/tenagophila_sp_gbif_models/maxent_baseline_metrics.csv")
+tenag_rf_sp_gbif_baseline_metrics <- read.csv("~/Desktop/r&r_model_runs/tenagophila_sp_gbif_models/rf_baseline_metrics.csv")
+tenag_brt_sp_gbif_baseline_metrics <- read.csv("~/Desktop/r&r_model_runs/tenagophila_sp_gbif_models/brt_baseline_metrics.csv")
+tenag_sp_gbif_models_auc_df <- c(tenag_me_sp_gbif_baseline_metrics$auc, 
+                                 tenag_rf_sp_gbif_baseline_metrics$auc, 
+                                 tenag_brt_sp_gbif_baseline_metrics$auc)
+mean(tenag_sp_gbif_models_auc_df, na.rm = T)
+mean(tenag_sp_gbif_models_auc_df)+(sd(tenag_sp_gbif_models_auc_df)/sqrt(length(tenag_sp_gbif_models_auc_df)))
+mean(tenag_sp_gbif_models_auc_df)-(sd(tenag_sp_gbif_models_auc_df)/sqrt(length(tenag_sp_gbif_models_auc_df)))
+
+tenag_me_sp_both_baseline_metrics <- read.csv("~/Desktop/r&r_model_runs/tenagophila_sp_models/maxent_baseline_metrics.csv")
+tenag_rf_sp_both_baseline_metrics <- read.csv("~/Desktop/r&r_model_runs/tenagophila_sp_models/rf_baseline_metrics.csv")
+tenag_brt_sp_both_baseline_metrics <- read.csv("~/Desktop/r&r_model_runs/tenagophila_sp_models/brt_baseline_metrics.csv")
+tenag_sp_both_models_auc_df <- c(tenag_me_sp_both_baseline_metrics$auc, 
+                                                   tenag_rf_sp_both_baseline_metrics$auc, 
+                                                   tenag_brt_sp_both_baseline_metrics$auc)
+mean(tenag_sp_both_models_auc_df, na.rm = T)
+mean(tenag_sp_both_models_auc_df)+(sd(tenag_sp_both_models_auc_df)/sqrt(length(tenag_sp_both_models_auc_df)))
+mean(tenag_sp_both_models_auc_df)-(sd(tenag_sp_both_models_auc_df)/sqrt(length(tenag_sp_both_models_auc_df)))
+```
