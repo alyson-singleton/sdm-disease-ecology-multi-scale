@@ -44,7 +44,7 @@ states <- read_state(
   showProgress = FALSE
 )
 
-occurrences <- readRDS("~/Desktop/national_occurrences_thinned_mapping.rds")
+occurrences <- readRDS("../data/mapping_datasets/national_occurrences_thinned_mapping.rds")
 occurrences$species <- factor(occurrences$species, levels=c("B. glabrata", "B. straminea", "B. tenagophila"))
 occurrences <- occurrences[order(occurrences$species,decreasing=F),]
 
@@ -73,7 +73,7 @@ sp_state <- read_state(
   showProgress = FALSE
 )
 
-occurrences <- readRDS("~/Desktop/sp_occurrences_thinned_mapping.rds")
+occurrences <- readRDS("../data/mapping_datasets/sp_occurrences_thinned_mapping.rds")
 occurrences$species <- factor(occurrences$species, levels=c("B. tenagophila", "B. glabrata", "B. straminea"))
 occurrences <- occurrences[order(occurrences$species,decreasing=T),]
 
@@ -98,7 +98,7 @@ mg_state <- read_state(
   showProgress = FALSE
 )
 
-occurrences <- readRDS("~/Desktop/mg_occurrences_thinned_mapping.rds")
+occurrences <- readRDS("../data/mapping_datasets/mg_occurrences_thinned_mapping.rds")
 occurrences$species <- factor(occurrences$species, levels=c("B. glabrata", "B. straminea", "B. tenagophila"))
 occurrences <- occurrences[order(occurrences$species,decreasing=F),]
 
@@ -431,6 +431,7 @@ fig3b <- tenag_auc_df_summary %>%
 fig3b
 legend <- get_legend(fig3b)
 fig3b <- fig3b + theme(legend.position = "none")
+
 #________________________auc glabrata____________________________________________________
 #build glabrata national auc table
 glab_me_national_baseline_metrics <- read.csv("~/Desktop/r&r_model_runs/glabrata_national_models/maxent_baseline_metrics.csv")
@@ -766,141 +767,6 @@ title("F",adj=0.01, cex.main=1.8)
 dev.off()
 ```
 
-```{r, Figure 5 draft, eval=T}
-#---------------------------------------------------------------------------------------------------------
-# Figure 4: Boxplots of spatially cross-validated, out-of-sample specificity values across species (A, B),
-#   scales (panels), and model types (colors).
-#---------------------------------------------------------------------------------------------------------
-
-pdp_base_plot <- function(brt_data, rf_data, maxent_data){
-  #brt_data <- brt_data[-which(brt_data$variable=="subregion"),]
-  brt_data$Model <- c("BRT")
-  brt_data$yhat <- scale(brt_data$yhat)
-  #rf_data <- rf_data[-which(rf_data$variable=="subregion"),]
-  rf_data$Model <- c("RF")
-  rf_data$yhat <- scale(-rf_data$yhat)
-  maxent_data$yhat <- ifelse(is.finite(maxent_data$yhat), maxent_data$yhat, NA)
-  #maxent_data <- maxent_data[which(is.finite(maxent_data$yhat)),]
-  #maxent_data <- maxent_data[-which(maxent_data$variable=="subregion"),]
-  maxent_data$Model <- c("MaxEnt")
-  maxent_data$yhat <- scale(maxent_data$yhat)
-  
-  pdp_combo <- rbind(brt_data, rf_data, maxent_data)
-  pdp_combo$Model <- factor(pdp_combo$Model, levels = c("MaxEnt", "RF", "BRT"),
-                            ordered = TRUE)
-  pdp_combo <- pdp_combo %>%
-     mutate(variable = replace(variable, variable == "ag_mosiac", "Prop cover of\ntemp crops"),
-  #          variable = replace(variable, variable == "agriculture", "Prop Agriculture"),
-  #          variable = replace(variable, variable == "hnd", "Height Above Drainage"),
-  #          variable = replace(variable, variable == "bio4_temp_", "Temp Seasonality"),
-  #          variable = replace(variable, variable == "bio11_temp", "Temp Coldest Q"),
-            variable = replace(variable, variable == "bio16_prec", "Precip wettest\nquarter"),
-  #          variable = replace(variable, variable == "bio17_prec", "Precip Driest Q"),
-            variable = replace(variable, variable == "distance_high_pop", "Dist to high\npop density"),
-  #          variable = replace(variable, variable == "forest", "Prop Forest"),
-            variable = replace(variable, variable == "clay", "Clay"))
-  #          variable = replace(variable, variable == "fresh_water", "Prop Water"))
-  
-  pdp_plot <- ggplot(pdp_combo) + 
-    #stat_smooth(aes(x=value, y=yhat, group=iter), color='lightgrey', method='loess', size=0.5, se=FALSE) + 
-    stat_smooth(aes(x=value, y=yhat, color=Model), method='loess', size=1, se=FALSE) +
-    #geom_rug(data=rug_data, aes(x=value), alpha=0.3, length=unit(0.05, "npc"), inherit.aes = FALSE, sides='b') +
-    facet_wrap(~variable, scales='free', ncol=1) + #ncol=1, scales='free'
-    scale_color_manual(values=c('#73D2DE', '#FFBC42', '#D81159')) + 
-    theme(plot.title = element_text(hjust=0.5, size=16),
-          plot.subtitle = element_text(hjust=0.5, size=22),
-          axis.title=element_text(size=22),
-          axis.title.y=element_blank(),
-          axis.text.y=element_text(size=12),
-          axis.title.x=element_blank(),
-          axis.text.x=element_text(size=12),
-          axis.text = element_text(size=12),
-          legend.text=element_text(size=13),
-          legend.title=element_text(size=14),
-          legend.position = "none",
-          strip.text.x = element_text(size = 12))
-  
-  
-  return(pdp_plot)
-}
-
-#---------------------------------------------------------------------------------------------------------
-#---------------------------------------------------------------------------------------------------------
-
-save <- c("hnd", "clay", "bio16_prec", "bio11_temp", "distance_high_pop", "bio17_prec", "pH", "soilWater")
-
-
-# Straminea National
-stram_brt_national_pdp <- read.csv("~/Desktop/r&r_model_runs/straminea_national_models/brt_pdp.csv")
-stram_rf_national_pdp <- read.csv("~/Desktop/r&r_model_runs/straminea_national_models/rf_pdp.csv")
-stram_maxent_national_pdp <- read.csv("~/Desktop/r&r_model_runs/straminea_national_models/maxent_pdp.csv")
-
-stram_brt_national_pdp <- stram_brt_national_pdp[(stram_brt_national_pdp$variable %in% save),]
-stram_rf_national_pdp <- stram_rf_national_pdp[(stram_rf_national_pdp$variable %in% save),]
-stram_maxent_national_pdp <- stram_maxent_national_pdp[(stram_maxent_national_pdp$variable %in% save),]
-
-fig4a <- pdp_base_plot(stram_brt_national_pdp, stram_rf_national_pdp, stram_maxent_national_pdp) + 
-  ggtitle("B. straminea\nNational") +
-  theme(legend.position = "none")
-legend <- get_legend(fig4a)
-
-# Straminea Minas Gerais
-stram_brt_mg_pdp <- read.csv("~/Desktop/r&r_model_runs/straminea_mg_models/brt_pdp.csv")
-stram_rf_mg_pdp <- read.csv("~/Desktop/r&r_model_runs/straminea_mg_models/rf_pdp.csv")
-stram_maxent_mg_pdp <- read.csv("~/Desktop/r&r_model_runs/straminea_mg_models/maxent_pdp.csv")
-stram_brt_mg_pdp <- stram_brt_mg_pdp[(stram_brt_mg_pdp$variable %in% save),]
-stram_rf_mg_pdp <- stram_rf_mg_pdp[(stram_rf_mg_pdp$variable %in% save),]
-stram_maxent_mg_pdp <- stram_maxent_mg_pdp[(stram_maxent_mg_pdp$variable %in% save),]
-
-fig4b <- pdp_base_plot(stram_brt_mg_pdp, stram_rf_mg_pdp, stram_maxent_mg_pdp) + 
-  ggtitle("B. straminea\nMinas Gerais")
-
-# Tenagophila National
-tenag_brt_national_pdp <- read.csv("~/Desktop/r&r_model_runs/tenagophila_national_models/brt_pdp.csv")
-tenag_rf_national_pdp <- read.csv("~/Desktop/r&r_model_runs/tenagophila_national_models/rf_pdp.csv")
-tenag_maxent_national_pdp <- read.csv("~/Desktop/r&r_model_runs/tenagophila_national_models/maxent_pdp.csv")
-tenag_brt_national_pdp <- tenag_brt_national_pdp[(tenag_brt_national_pdp$variable %in% save),]
-tenag_rf_national_pdp <- tenag_rf_national_pdp[(tenag_rf_national_pdp$variable %in% save),]
-tenag_maxent_national_pdp <- tenag_maxent_national_pdp[(tenag_maxent_national_pdp$variable %in% save),]
-
-fig4c <- pdp_base_plot(tenag_brt_national_pdp, tenag_rf_national_pdp, tenag_maxent_national_pdp) + 
-  ggtitle("B. tenagophila\nNational")
-
-# Tenagophila Sao Paulo
-tenag_brt_mg_pdp <- read.csv("~/Desktop/r&r_model_runs/tenagophila_sp_models/brt_pdp.csv")
-tenag_rf_mg_pdp <- read.csv("~/Desktop/r&r_model_runs/tenagophila_sp_models/rf_pdp.csv")
-tenag_maxent_mg_pdp <- read.csv("~/Desktop/r&r_model_runs/tenagophila_sp_models/maxent_pdp.csv")
-tenag_brt_mg_pdp <- tenag_brt_mg_pdp[(tenag_brt_mg_pdp$variable %in% save),]
-tenag_rf_mg_pdp <- tenag_rf_mg_pdp[(tenag_rf_mg_pdp$variable %in% save),]
-tenag_maxent_mg_pdp <- tenag_maxent_mg_pdp[(tenag_maxent_mg_pdp$variable %in% save),]
-
-fig4d <- pdp_base_plot(tenag_brt_mg_pdp, tenag_rf_mg_pdp, tenag_maxent_mg_pdp) + 
-  ggtitle("B. tenagophila\nS?o Paulo")
-
-# glabrata National
-glab_brt_national_pdp <- read.csv("~/Desktop/r&r_model_runs/glabrata_national_models/brt_pdp.csv")
-glab_rf_national_pdp <- read.csv("~/Desktop/r&r_model_runs/glabrata_national_models/rf_pdp.csv")
-glab_maxent_national_pdp <- read.csv("~/Desktop/r&r_model_runs/glabrata_national_models/maxent_pdp.csv")
-
-# glabrata Minas Gerais
-glab_brt_mg_pdp <- read.csv("~/Desktop/r&r_model_runs/glabrata_mg_models/brt_pdp.csv")
-glab_rf_mg_pdp <- read.csv("~/Desktop/r&r_model_runs/glabrata_mg_models/rf_pdp.csv")
-glab_maxent_mg_pdp <- read.csv("~/Desktop/r&r_model_runs/glabrata_mg_models/maxent_pdp.csv")
-
-#---------------------------------------------------------------------------------------------------------
-# Full Figure 4
-fig4 <- grid.arrange(fig4a, fig4b, fig4c, fig4d, legend,                            
-                     ncol = 4, nrow = 2,
-                     layout_matrix = rbind(c(1,2,3,4), c(5,5,5,5)),heights=c(11,1))
-
-fig4 <- as_ggplot(fig4) +                                
-  draw_plot_label(label = c("A", "B", "C", "D"), size = 18,
-                  x = c(0.02, 0.26, 0.51, 0.76), y = c(0.98, 0.98, 0.98, 0.98)) 
-
-annotate_figure(fig4, left = textGrob("Marginal Change in Prediction", rot = 90, vjust = 1, gp = gpar(cex = 1.5)), 
-                bottom = textGrob("Predictor Value", vjust = 0, gp = gpar(cex = 1.5)))
-```
-
 ```{r, Figure 5 Updated, eval=T}
 #---------------------------------------------------------------------------------------------------------
 ## Figure 4 Draft 2
@@ -1065,7 +931,7 @@ ggsave("Fig4.pdf", plot=fig.test, path="~/Desktop/r&r_figures/", width=8, height
 
 ```{r, Figure 6, eval=T}
 #---------------------------------------------------------------------------------------------------------
-# Figure 5: Variable importance attributed to land use/land cover (LULC) variables increases 
+# Figure 6: Variable importance attributed to land use/land cover (LULC) variables increases 
 #   at smaller scales. 
 #---------------------------------------------------------------------------------------------------------
 scale_this <- function(x){
