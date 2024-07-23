@@ -9,17 +9,7 @@ output:
 
 ```{r setup, include=FALSE}
 # install packages, load libraries, set themes, knit formatting
-pacman::p_load(tidyverse, dplyr, kableExtra, knitr, sf, raster, terra, spData, tmap, leaflet, ggplot2, spThin, mapdata, rnaturalearth, rnaturalearthdata, brazilmaps, devtools, brazilmaps, mapview, grid, gridExtra, RColorBrewer, raster)
-
-library(geobr)
-library(ggplot2)
-library(sf)
-library(dplyr)
-library(ggpubr)
-library(gridExtra)
-library(cowplot)
-library(raster)
-library(terra)
+pacman::p_load(tidyverse, dplyr, kableExtra, knitr, sf, raster, terra, spData, tmap, leaflet, ggplot2, spThin, mapdata, rnaturalearth, rnaturalearthdata, brazilmaps, devtools, brazilmaps, mapview, grid, gridExtra, RColorBrewer, geobr, ggpubr, cowplot, showtext)
 
 theme_set(theme_bw())
 knitr::opts_chunk$set(echo = F, results='asis', warning=F, message=F, cache=T,
@@ -32,8 +22,8 @@ get_legend<-function(myggplot){
   return(legend)
 }
 
-library(showtext)
-font_add("Arial", "/Library/Fonts/Arial.ttf")  # Use the actual file path
+
+font_add("Arial", "/Library/Fonts/Arial.ttf")
 showtext_auto()
 
 no_axis <- theme(axis.title=element_blank(),
@@ -54,27 +44,17 @@ states <- read_state(
   showProgress = FALSE
 )
 
-occurrences <- readRDS("~/Desktop/doctorate/ch1 brazil schisto/schisto_manuscript_figs/jan_mlk_runs/national_occurences_thinned_mapping_tenag_glab.rds")
-occurrences <- occurrences[-which(occurrences$species=="B. tenagophila"),]
-occurrences_2 <- readRDS("~/Desktop/doctorate/ch1 brazil schisto/schisto_manuscript_figs/jan_mlk_runs/national_occurences_thinned_mapping_tenag_stram.rds")
-occurrences_2 <- occurrences_2[,c(1,12,13,14,15)]
-occurrences <- rbind(occurrences, occurrences_2)
+occurrences <- readRDS("~/Desktop/national_occurrences_thinned_mapping.rds")
 occurrences$species <- factor(occurrences$species, levels=c("B. glabrata", "B. straminea", "B. tenagophila"))
 occurrences <- occurrences[order(occurrences$species,decreasing=F),]
-#yellow: FFC107
-#green:2D936C
 
-#scale_fill_manual(values=c("#C24425","#FFD551","#25CED1"))+
-  
 # Plot all Brazilian states
 fig1a <- ggplot() +
   geom_sf(data=states, fill="#F4F4F4", color="#626262", size=.15, show.legend = FALSE) +
   geom_sf(data = occurrences, aes(geometry = geometry, fill=species, shape=source), colour="black", size = 1.7, alpha=0.5) + 
-  #scale_fill_manual(values=c("#C24425","#FFD551","#25CED1"))+
   scale_fill_manual(values=c("#DC267F","#FFB000","#648FFF"))+
   scale_shape_manual(values=c(21,23),
                      labels=c("Expert", "GBIF")) +
-  #labs(subtitle="States", size=8) +
   theme_minimal() +
   no_axis +
   xlim(c(-72.5, -35)) +
@@ -93,18 +73,14 @@ sp_state <- read_state(
   showProgress = FALSE
 )
 
-occurrences <- readRDS("~/Desktop/doctorate/ch1 brazil schisto/schisto_manuscript_figs/jan_mlk_runs/sp_occurences_thinned_mapping_glab_tenag.rds")
-occurrences <- occurrences[-which(occurrences$species=="B. tenagophila"),]
-occurrences_2 <- readRDS("~/Desktop/doctorate/ch1 brazil schisto/schisto_manuscript_figs/jan_mlk_runs/sp_occurences_thinned_mapping_stram_tenag.rds")
-occurrences_2 <- occurrences_2[,c(1,12,13,14,15)]
-occurrences <- rbind(occurrences, occurrences_2)
+occurrences <- readRDS("~/Desktop/sp_occurrences_thinned_mapping.rds")
 occurrences$species <- factor(occurrences$species, levels=c("B. tenagophila", "B. glabrata", "B. straminea"))
 occurrences <- occurrences[order(occurrences$species,decreasing=T),]
+
 fig1b <- ggplot() +
   geom_sf(data=sp_state, fill="#F4F4F4", color="#626262", size=.15, show.legend = FALSE) +
   geom_sf(data = occurrences, aes(geometry = geometry, fill=species, shape=source), colour="black", size = 2.5, alpha=0.5) + 
   scale_fill_manual(values=c("#648FFF","#DC267F","#FFB000"))+
-  #scale_fill_manual(values=c("#25CED1","#C24425","#FFD551"))+
   scale_shape_manual(values=c(21,23),
                      labels=c("Expert", "GBIF")) +
   theme_minimal() +
@@ -122,19 +98,14 @@ mg_state <- read_state(
   showProgress = FALSE
 )
 
-occurrences <- readRDS("~/Desktop/doctorate/ch1 brazil schisto/schisto_manuscript_figs/jan_mlk_runs/mg_glabrata_occurences_thinned_mapping.rds")
-occurrences <- occurrences[-which(occurrences$species=="B. tenagophila"),]
-occurrences_2 <- readRDS("~/Desktop/doctorate/ch1 brazil schisto/schisto_manuscript_figs/jan_mlk_runs/mg_straminea_occurences_thinned_mapping.rds")
-occurrences_2 <- occurrences_2[,c(1,12,13,14,15)]
-occurrences <- rbind(occurrences, occurrences_2)
+occurrences <- readRDS("~/Desktop/mg_occurrences_thinned_mapping.rds")
 occurrences$species <- factor(occurrences$species, levels=c("B. glabrata", "B. straminea", "B. tenagophila"))
 occurrences <- occurrences[order(occurrences$species,decreasing=F),]
-#occurrences <- occurrences[which(occurrences$species=="B. straminea"),]
+
 fig1c <- ggplot() +
   geom_sf(data=mg_state, fill="#F4F4F4", color="#626262", size=.15, show.legend = FALSE) +
   geom_sf(data = occurrences, aes(geometry = geometry, fill=species, shape=source), colour="black", size = 2.5, alpha=0.5) + 
   scale_fill_manual(values=c("#DC267F","#FFB000","#648FFF"))+
-  #scale_fill_manual(values=c("#C24425","#FFD551","#25CED1"))+
   scale_shape_manual(values=c(21,23),
                      labels=c("Expert", "GBIF")) +
   theme_minimal() +
@@ -148,130 +119,117 @@ fig1c <- ggplot() +
 # Full Figure 1
 fig1 <- grid.arrange(fig1a, fig1c, fig1b, legend,                            
              ncol = 6, nrow = 5, 
-             #common.legend = TRUE, legend = "bottom",
              layout_matrix = rbind(c(1,1,1,1,2,2,4), c(1,1,1,1,2,2,4), c(1,1,1,1,3,3,4), c(1,1,1,1,3,3,4)))
 
 fig1 <- as_ggplot(fig1) +                                
   draw_plot_label(label = c("A", "B", "C"), size = 15,
                   x = c(0.03, 0.55, 0.55), y = c(0.925, 0.925, 0.45)) 
-#fig1
-ggsave("Fig1_v2.pdf", fig1, path="~/Desktop/r&r_figures/",width=14, height=10, units="in", device = "pdf")
+
+ggsave("Fig1.pdf", fig1, path="~/Desktop/r&r_figures/",width=14, height=10, units="in", device = "pdf")
 ```
 
 ```{r, Figure 2, eval=T}
 #---------------------------------------------------------------------------------------------------------
-# Figure 2vfinal: National prediction maps of B. straminea/tenagophila suitability probabilities by model type
+# Figure 2: National prediction maps of B. straminea/tenagophila suitability probabilities by model type
 #---------------------------------------------------------------------------------------------------------
-pdf("~/Desktop/r&r_figures/Fig2.pdf", width=11, height=10)
+#tell R you want to save the end plot as a pdf
+pdf("~/Desktop/Fig2.pdf", width=11, height=10)
+
 #set standard scale/colors for this figure
 zlim <- range(c(0,1))
 breakpoints <- c(seq(0, 1, 0.125))
 colors2 <- c(RColorBrewer::brewer.pal(9, "BuPu"))[2:9]
 
+#plot set up
 par(mar = c(0, 0, 0, 0))
-par(mfrow=c(3,3), mar = c(1,3,2,0))#, mai=c(0.05,0.05,0.05,0.05))
+par(mfrow=c(3,3), mar = c(1,3,2,0))
 
-str_name <-'~/Desktop/r&r_predictions/glabrata_national_models/prediction_rasters/maxent_mean.tif' 
+#load in nine mean maps and plot
+str_name <-'~/Desktop/doctorate/ch1 brazil schisto/r&r/r&r_predictions/glabrata_national_models/prediction_rasters/maxent_mean.tif' 
 me_pred_raster <- raster(str_name)
 colors2 <- c(RColorBrewer::brewer.pal(9, "BuPu"))[2:9]
-fig2a <- plot(me_pred_raster,# main="A",  
-              main="Maximum Entropy", #ylab = "B. straminea\n",
+fig2a <- plot(me_pred_raster,
+              main="Maximum Entropy", 
               axes = FALSE, box = FALSE, legend = FALSE,
               breaks = c(0,seq(0.025, me_pred_raster@data@max, (me_pred_raster@data@max-0.025)/7)), col = colors2,
-              #breaks = c(seq(me_pred_raster@data@min, me_pred_raster@data@max, (me_pred_raster@data@max-me_pred_raster@data@min)/8)), col = colors2,
-              #xlab="Longitude", ylab="Latitude",
               cex.main = 2, cex.lab=2, zlim=range(c(me_pred_raster@data@min,me_pred_raster@data@max))
 )
 title(ylab = "B. glabrata\n", adj=0.5, line=-0.59, font.lab=4, cex.lab=1.6)
 title("A",adj=0, cex.main=1.6)
 
-str_name <-'~/Desktop/r&r_predictions/glabrata_national_models/prediction_rasters/rf_mean.tif' 
+str_name <-'~/Desktop/doctorate/ch1 brazil schisto/r&r/r&r_predictions/glabrata_national_models/prediction_rasters/rf_mean.tif' 
 rf_pred_raster <- brick(str_name)
-fig2b <- raster::plot(rf_pred_raster[[c(1)]], #main="B",    
+fig2b <- raster::plot(rf_pred_raster[[c(1)]],
                       main="Random Forest",
                       axes = FALSE, box = FALSE,  legend = FALSE,
                       breaks = c(seq(rf_pred_raster@data@min, rf_pred_raster@data@max, (rf_pred_raster@data@max-rf_pred_raster@data@min)/8)), col = colors2,
-                      #xlab="Longitude", ylab="Latitude",
                       cex.main = 2, cex.lab=2, zlim=range(c(rf_pred_raster@data@min,rf_pred_raster@data@max))
 )
 title("B",adj=0, cex.main=1.6)
 
-str_name <-'~/Desktop/r&r_predictions/glabrata_national_models/prediction_rasters/brt_mean.tif' 
+str_name <-'~/Desktop/doctorate/ch1 brazil schisto/r&r/r&r_predictions/glabrata_national_models/prediction_rasters/brt_mean.tif' 
 brt_pred_raster <- brick(str_name)
-fig2c <- plot(brt_pred_raster[[c(1)]],# main="C",    
+fig2c <- plot(brt_pred_raster[[c(1)]],
               main="Boosted Regression Tree",
               axes = FALSE, box = FALSE, legend = FALSE,
               breaks = c(seq(brt_pred_raster@data@min, brt_pred_raster@data@max, (brt_pred_raster@data@max-brt_pred_raster@data@min)/8)), col = colors2,
-              #xlab="Longitude", ylab="Latitude",
               cex.main = 2, cex.lab=2, zlim=range(c(brt_pred_raster@data@min,brt_pred_raster@data@max))
 )
 title("C",adj=0, cex.main=1.6)
 
-str_name <-'~/Desktop/r&r_predictions/straminea_national_models/prediction_rasters/maxent_mean.tif' 
+str_name <-'~/Desktop/doctorate/ch1 brazil schisto/r&r/r&r_predictions/straminea_national_models/prediction_rasters/maxent_mean.tif' 
 me_pred_raster <- raster(str_name)
 colors2 <- c(RColorBrewer::brewer.pal(9, "BuPu"))[2:9]
-fig2d <- plot(me_pred_raster,# main="A",  
-              #main="Maximum Entropy", #ylab = "B. straminea\n",
+fig2d <- plot(me_pred_raster, 
               axes = FALSE, box = FALSE, legend = FALSE,
               breaks = c(seq(me_pred_raster@data@min, me_pred_raster@data@max, (me_pred_raster@data@max-me_pred_raster@data@min)/8)), col = colors2,
-              #xlab="Longitude", ylab="Latitude",
               cex.main = 2, cex.lab=2, zlim=range(c(me_pred_raster@data@min,me_pred_raster@data@max))
 )
 title(ylab = "B. straminea\n", adj=0.5, line=-0.59, font.lab=4, cex.lab=1.6)
 title("D",adj=0, cex.main=1.6)
 
-str_name <-'~/Desktop/r&r_predictions/straminea_national_models/prediction_rasters/rf_mean.tif' 
+str_name <-'~/Desktop/doctorate/ch1 brazil schisto/r&r/r&r_predictions/straminea_national_models/prediction_rasters/rf_mean.tif' 
 rf_pred_raster <- brick(str_name)
-fig2e <- raster::plot(rf_pred_raster[[c(1)]], #main="B",    
-                      #main="Random Forest",
+fig2e <- plot(rf_pred_raster[[c(1)]],
                       axes = FALSE, box = FALSE,  legend = FALSE,
                       breaks = c(seq(rf_pred_raster@data@min, rf_pred_raster@data@max, (rf_pred_raster@data@max-rf_pred_raster@data@min)/8)), col = colors2,
-                      #xlab="Longitude", ylab="Latitude",
                       cex.main = 2, cex.lab=2, zlim=range(c(rf_pred_raster@data@min,rf_pred_raster@data@max))
 )
 title("E",adj=0, cex.main=1.6)
 
-str_name <-'~/Desktop/r&r_predictions/straminea_national_models/prediction_rasters/brt_mean.tif' 
+str_name <-'~/Desktop/doctorate/ch1 brazil schisto/r&r/r&r_predictions/straminea_national_models/prediction_rasters/brt_mean.tif' 
 brt_pred_raster <- brick(str_name)
-fig2f <- plot(brt_pred_raster[[c(1)]],# main="C",    
-              #main="Boosted Regression Tree",
+fig2f <- plot(brt_pred_raster[[c(1)]],    
               axes = FALSE, box = FALSE, legend = FALSE,
               breaks = c(seq(brt_pred_raster@data@min, brt_pred_raster@data@max, (brt_pred_raster@data@max-brt_pred_raster@data@min)/8)), col = colors2,
-              #xlab="Longitude", ylab="Latitude",
               cex.main = 2, cex.lab=2, zlim=range(c(brt_pred_raster@data@min,brt_pred_raster@data@max))
 )
 title("F",adj=0, cex.main=1.6)
 
-str_name <-'~/Desktop/r&r_predictions/tenagophila_national_models/prediction_rasters/maxent_mean.tif' 
+str_name <-'~/Desktop/doctorate/ch1 brazil schisto/r&r/r&r_predictions/tenagophila_national_models/prediction_rasters/maxent_mean.tif' 
 me_pred_raster <- brick(str_name)
 fig2g <- plot(me_pred_raster[[c(1)]],  
-              #main="Maximum Entropy",
               axes = FALSE, box = FALSE, legend = FALSE,
               breaks = c(seq(me_pred_raster@data@min, me_pred_raster@data@max, (me_pred_raster@data@max-me_pred_raster@data@min)/8)), col = colors2,
-              #xlab="Longitude", ylab="Latitude",
               cex.main = 2, cex.lab=2, zlim=range(c(me_pred_raster@data@min,me_pred_raster@data@max))
 )
 title(ylab = "B. tenagophila\n", adj=0.5, line=-0.59, font.lab=4, cex.lab=1.6)
 title("G",adj=0, cex.main=1.6)
 
-str_name <-'~/Desktop/r&r_predictions/tenagophila_national_models/prediction_rasters/rf_mean.tif' 
+str_name <-'~/Desktop/doctorate/ch1 brazil schisto/r&r/r&r_predictions/tenagophila_national_models/prediction_rasters/rf_mean.tif' 
 rf_pred_raster <- brick(str_name)
 fig2h <- raster::plot(rf_pred_raster[[c(1)]],  
-                      #main="Random Forest",
                       axes = FALSE, box = FALSE, legend = FALSE,
                       breaks = c(seq(rf_pred_raster@data@min, rf_pred_raster@data@max, (rf_pred_raster@data@max-rf_pred_raster@data@min)/8)), col = colors2,
-                      #xlab="Longitude", ylab="Latitude",
                       cex.main = 2, cex.lab=2, zlim=range(c(rf_pred_raster@data@min,rf_pred_raster@data@max))
 )
 title("H",adj=0, cex.main=1.6)
 
-str_name <-'~/Desktop/r&r_predictions/tenagophila_national_models/prediction_rasters/brt_mean.tif' 
+str_name <-'~/Desktop/doctorate/ch1 brazil schisto/r&r/r&r_predictions/tenagophila_national_models/prediction_rasters/brt_mean.tif' 
 brt_pred_raster <- brick(str_name)
 fig2i <- plot(brt_pred_raster[[c(1)]],
-              #main="Boosted Regression Tree",
               axes = FALSE, box = FALSE, legend = FALSE,
               breaks = c(seq(brt_pred_raster@data@min, brt_pred_raster@data@max, (brt_pred_raster@data@max-brt_pred_raster@data@min)/8)), col = colors2,
-              #xlab="Longitude", ylab="Latitude",
               cex.main = 2, cex.lab=2, zlim=range(c(rf_pred_raster@data@min,brt_pred_raster@data@max))
 )
 title("I",adj=0, cex.main=1.6)
@@ -427,7 +385,7 @@ tenag_mg_models_auc_df$n <- sum(!is.na(tenag_mg_models_auc_df$MaxEnt))
 # Build full plot
 tenag_national_models_auc_df$geo_extent <- "National"
 tenag_sudeste_models_auc_df$geo_extent <- "Sudeste"
-tenag_mg_models_auc_df$geo_extent <- "São Paulo"
+tenag_mg_models_auc_df$geo_extent <- "S?o Paulo"
 
 tenag_auc_df <- rbind(tenag_national_models_auc_df, tenag_sudeste_models_auc_df, tenag_mg_models_auc_df)
 tenag_auc_df <- tenag_auc_df %>% pivot_longer(cols=c('MaxEnt', 'RF', 'BRT'),
@@ -448,7 +406,7 @@ tenag_auc_df_summary <- distinct(tenag_auc_df_summary)
 
 fig3b <- tenag_auc_df_summary %>%
   mutate(model = factor(model, levels = c("MaxEnt","RF", "BRT"))) %>%
-  mutate(geo_extent = factor(geo_extent, levels = c("National","Sudeste", "São Paulo"))) %>%
+  mutate(geo_extent = factor(geo_extent, levels = c("National","Sudeste", "S?o Paulo"))) %>%
   ggplot(aes(model, mean, color=model)) + 
   geom_errorbar(aes(ymin=sd.err.low,ymax=sd.err.high,color=model),width=0.4,linewidth=0.9) +
   geom_point(aes(x=model, y=mean,color=model),size=3) +
@@ -657,7 +615,7 @@ plot(rf_pred_raster3[[c(1)]],
 title("F",adj=0.01, cex.main=1.8)
 dev.off()
 #---------------------------------------------------------------------------------------------------------
-##SÃO PAULO
+##S?O PAULO
 pdf("~/Desktop/r&r_figures/Fig4tenag.pdf", width=8, height=9)
 colors2 <- c(RColorBrewer::brewer.pal(9, "BuPu"))[2:9]
 par(mar = c(0, 0, 0, 0))
@@ -917,7 +875,7 @@ tenag_rf_mg_pdp <- tenag_rf_mg_pdp[(tenag_rf_mg_pdp$variable %in% save),]
 tenag_maxent_mg_pdp <- tenag_maxent_mg_pdp[(tenag_maxent_mg_pdp$variable %in% save),]
 
 fig4d <- pdp_base_plot(tenag_brt_mg_pdp, tenag_rf_mg_pdp, tenag_maxent_mg_pdp) + 
-  ggtitle("B. tenagophila\nSão Paulo")
+  ggtitle("B. tenagophila\nS?o Paulo")
 
 # glabrata National
 glab_brt_national_pdp <- read.csv("~/Desktop/r&r_model_runs/glabrata_national_models/brt_pdp.csv")
@@ -1014,7 +972,7 @@ tenag_maxent_mg_pdp$yhat <- scale(tenag_maxent_mg_pdp$yhat)
 pdp_combo3 <- rbind(tenag_brt_mg_pdp, tenag_rf_mg_pdp, tenag_maxent_mg_pdp)
 pdp_combo3$Model <- factor(pdp_combo3$Model, levels = c("MaxEnt", "RF", "BRT"),
                            ordered = TRUE)
-pdp_combo3$Scale <- c("B. tenagophila\nSão Paulo")
+pdp_combo3$Scale <- c("B. tenagophila\nS?o Paulo")
 #---------------------------------------------------------------------------------------------------------
 #glabrata National Prep
 glab_brt_national_pdp$Model <- c("BRT")
@@ -1054,7 +1012,7 @@ pdp_combo1$Scale <- c("B. glabrata\nMinas Gerais")
 
 # NEW FIG 4
 pdp_all <- rbind(pdp_combo, pdp_combo1, pdp_combo2, pdp_combo3)
-pdp_all$Scale <- factor(pdp_all$Scale, levels = c("B. glabrata\nNational","B. glabrata\nMinas Gerais","B. tenagophila\nNational","B. tenagophila\nSão Paulo"),
+pdp_all$Scale <- factor(pdp_all$Scale, levels = c("B. glabrata\nNational","B. glabrata\nMinas Gerais","B. tenagophila\nNational","B. tenagophila\nS?o Paulo"),
                           ordered = TRUE)
 unique(pdp_all$variable)
 save_small <- c("clay", "bio11_temp", "distance_high_pop")
@@ -1194,9 +1152,9 @@ fig5a <- ggplot(vimp_props_df, aes(x=x, group = 1)) +
 tenagophila_vimp_props_df <- data.frame(c(vimp_props(rf_vimp_national_tenagophila), vimp_props(rf_vimp_sudeste_tenagophila), vimp_props(rf_vimp_sp_tenagophila)),
                                         c(vimp_props(maxent_vimp_national_tenagophila), vimp_props(maxent_vimp_sudeste_tenagophila), vimp_props(maxent_vimp_sp_tenagophila)),
                                         c(vimp_props(brt_vimp_national_tenagophila), vimp_props(brt_vimp_sudeste_tenagophila), vimp_props(brt_vimp_sp_tenagophila)),
-                                        c("National", "Sudeste", "São Paulo"))
+                                        c("National", "Sudeste", "S?o Paulo"))
 colnames(tenagophila_vimp_props_df) <- c("RF", "MaxEnt", "BRT", "x")
-tenagophila_vimp_props_df <- tenagophila_vimp_props_df %>% mutate(x = factor(x, levels = c("National","Sudeste", "São Paulo")))
+tenagophila_vimp_props_df <- tenagophila_vimp_props_df %>% mutate(x = factor(x, levels = c("National","Sudeste", "S?o Paulo")))
 
 fig5b <- ggplot(tenagophila_vimp_props_df, aes(x=x, group = 1)) + 
   geom_line(aes(y=RF), color="#FFBC42") +
@@ -1677,7 +1635,7 @@ tenag_mg_models_sensitivity_df$n <- sum(!is.na(tenag_mg_models_sensitivity_df$Ma
 # Build full plot
 tenag_national_models_sensitivity_df$geo_extent <- "National"
 tenag_sudeste_models_sensitivity_df$geo_extent <- "Sudeste"
-tenag_mg_models_sensitivity_df$geo_extent <- "São Paulo"
+tenag_mg_models_sensitivity_df$geo_extent <- "S?o Paulo"
 
 tenag_sensitivity_df <- rbind(tenag_national_models_sensitivity_df, tenag_sudeste_models_sensitivity_df, tenag_mg_models_sensitivity_df)
 tenag_sensitivity_df <- tenag_sensitivity_df %>% pivot_longer(cols=c('MaxEnt', 'RF', 'BRT'),
@@ -1697,7 +1655,7 @@ tenag_sensitivity_df_summary <- distinct(tenag_sensitivity_df_summary)
 
 fig.tenag.sens <- tenag_sensitivity_df_summary %>%
   mutate(model = factor(model, levels = c("MaxEnt","RF", "BRT"))) %>%
-  mutate(geo_extent = factor(geo_extent, levels = c("National","Sudeste", "São Paulo"))) %>%
+  mutate(geo_extent = factor(geo_extent, levels = c("National","Sudeste", "S?o Paulo"))) %>%
   ggplot(aes(model, mean, color=model)) + 
   geom_errorbar(aes(ymin=sd.err.low,ymax=sd.err.high,color=model),width=0.4,linewidth=0.9) +
   geom_point(aes(x=model, y=mean,color=model),size=3) +
@@ -1922,7 +1880,7 @@ tenag_mg_models_specificity_df$n <- sum(!is.na(tenag_mg_models_specificity_df$Ma
 # Build full plot
 tenag_national_models_specificity_df$geo_extent <- "National"
 tenag_sudeste_models_specificity_df$geo_extent <- "Sudeste"
-tenag_mg_models_specificity_df$geo_extent <- "São Paulo"
+tenag_mg_models_specificity_df$geo_extent <- "S?o Paulo"
 
 tenag_specificity_df <- rbind(tenag_national_models_specificity_df, tenag_sudeste_models_specificity_df, tenag_mg_models_specificity_df)
 tenag_specificity_df <- tenag_specificity_df %>% pivot_longer(cols=c('MaxEnt', 'RF', 'BRT'),
@@ -1942,7 +1900,7 @@ tenag_specificity_df_summary <- distinct(tenag_specificity_df_summary)
 
 fig.tenag.spec <- tenag_specificity_df_summary %>%
   mutate(model = factor(model, levels = c("MaxEnt","RF", "BRT"))) %>%
-  mutate(geo_extent = factor(geo_extent, levels = c("National","Sudeste", "São Paulo"))) %>%
+  mutate(geo_extent = factor(geo_extent, levels = c("National","Sudeste", "S?o Paulo"))) %>%
   ggplot(aes(model, mean, color=model)) + 
   geom_errorbar(aes(ymin=sd.err.low,ymax=sd.err.high,color=model),width=0.4,linewidth=0.9) +
   geom_point(aes(x=model, y=mean,color=model),size=3) +
@@ -2166,7 +2124,7 @@ tenag_mg_models_pauc_mean_df$n <- sum(!is.na(tenag_mg_models_pauc_mean_df$MaxEnt
 # Build full plot
 tenag_national_models_pauc_mean_df$geo_extent <- "National"
 tenag_sudeste_models_pauc_mean_df$geo_extent <- "Sudeste"
-tenag_mg_models_pauc_mean_df$geo_extent <- "São Paulo"
+tenag_mg_models_pauc_mean_df$geo_extent <- "S?o Paulo"
 
 tenag_pauc_mean_df <- rbind(tenag_national_models_pauc_mean_df, tenag_sudeste_models_pauc_mean_df, tenag_mg_models_pauc_mean_df)
 tenag_pauc_mean_df <- tenag_pauc_mean_df %>% pivot_longer(cols=c('MaxEnt', 'RF', 'BRT'),
@@ -2186,7 +2144,7 @@ tenag_pauc_mean_df_summary <- distinct(tenag_pauc_mean_df_summary)
 
 fig.tenag.pauc <- tenag_pauc_mean_df_summary %>%
   mutate(model = factor(model, levels = c("MaxEnt","RF", "BRT"))) %>%
-  mutate(geo_extent = factor(geo_extent, levels = c("National","Sudeste", "São Paulo"))) %>%
+  mutate(geo_extent = factor(geo_extent, levels = c("National","Sudeste", "S?o Paulo"))) %>%
   ggplot(aes(model, mean, color=model)) + 
   geom_errorbar(aes(ymin=sd.err.low,ymax=sd.err.high,color=model),width=0.4,linewidth=0.9) +
   geom_point(aes(x=model, y=mean,color=model),size=3) +
@@ -2391,7 +2349,7 @@ tenag_mg_models_pauc_pval_df$n <- sum(!is.na(tenag_mg_models_pauc_pval_df$MaxEnt
 # Build full plot
 tenag_national_models_pauc_pval_df$geo_extent <- "National"
 tenag_sudeste_models_pauc_pval_df$geo_extent <- "Sudeste"
-tenag_mg_models_pauc_pval_df$geo_extent <- "São Paulo"
+tenag_mg_models_pauc_pval_df$geo_extent <- "S?o Paulo"
 
 tenag_pauc_pval_df <- rbind(tenag_national_models_pauc_pval_df, tenag_sudeste_models_pauc_pval_df, tenag_mg_models_pauc_pval_df)
 tenag_pauc_pval_df <- tenag_pauc_pval_df %>% pivot_longer(cols=c('MaxEnt', 'RF', 'BRT'),
@@ -2554,7 +2512,7 @@ tenag_mg_models_tss_df$n <- sum(!is.na(tenag_mg_models_tss_df$MaxEnt))
 # Build full plot
 tenag_national_models_tss_df$geo_extent <- "National"
 tenag_sudeste_models_tss_df$geo_extent <- "Sudeste"
-tenag_mg_models_tss_df$geo_extent <- "São Paulo"
+tenag_mg_models_tss_df$geo_extent <- "S?o Paulo"
 
 tenag_tss_df <- rbind(tenag_national_models_tss_df, tenag_sudeste_models_tss_df, tenag_mg_models_tss_df)
 tenag_tss_df <- tenag_tss_df %>% pivot_longer(cols=c('MaxEnt', 'RF', 'BRT'),
@@ -2574,7 +2532,7 @@ tenag_tss_df_summary <- distinct(tenag_tss_df_summary)
 
 fig.tenag.tss <- tenag_tss_df_summary %>%
   mutate(model = factor(model, levels = c("MaxEnt","RF", "BRT"))) %>%
-  mutate(geo_extent = factor(geo_extent, levels = c("National","Sudeste", "São Paulo"))) %>%
+  mutate(geo_extent = factor(geo_extent, levels = c("National","Sudeste", "S?o Paulo"))) %>%
   ggplot(aes(model, mean, color=model)) + 
   geom_errorbar(aes(ymin=sd.err.low,ymax=sd.err.high,color=model),width=0.4,linewidth=0.9) +
   geom_point(aes(x=model, y=mean,color=model),size=3) +
