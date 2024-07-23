@@ -13,6 +13,6 @@ __Data__:
 __Code__:
 * _00_functions.R_: Load pROC functions from the NicheToolBox package in R by Luis Osorio: https://github.com/luismurao/ntbox/blob/master/R/pROC.R.
 * _01_preprocessing_species_data.R_: Script used to create _preprocessed_datasets_ above. Posted for reproducibility. Recommend to just use the _preprocessed_datasets_ in the _data_ folder, rather than recreate from scratch.
-* _02_maxent_function.R_, _03_rf_function.R_, and _04_brt_function.R_: Main functions used to evaluate model performance (i.e., using spatial cross-validation).
+* _02_maxent_function.R_, _03_rf_function.R_, and _04_brt_function.R_: Main functions used to evaluate model performance (i.e., using spatial cross-validation), create partial dependence plots, and calculate variable importance.
 * _05_prediction_bootstrapping.R_: Bootstrapping analysis to produce prediction maps (i.e., random 80/20 splits).
 * _06_manuscript_figures.Rmd_: Rmd file including code for constructing all figures, tables, and supplementary information.
