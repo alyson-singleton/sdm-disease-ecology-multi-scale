@@ -7,6 +7,7 @@ __Data__:
   2. GBIF snail data set, including coordinates, source, and species (_Biomphalaria_ and all others reported in the expert-collected dataset). Collection methods detailed in the manuscript.
 * _preprocessed_datasets_: Subsets of the full dataset including presence and background data for each scale and species investigated in this analysis. These datasets have already been thinned and are ready as model input.
   * _mg_: Minas Gerais, _sp_: São Paulo, _limited_: presence points randomly reduced to match the number of total GBIF points for B. tenagophila in São Paulo (Fig E in S1 text).
+* _mapping_datasets_: Datasets used to create Fig 1 maps.
 
 
 __Code__:
