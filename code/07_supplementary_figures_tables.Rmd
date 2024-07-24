@@ -35,7 +35,7 @@ no_axis <- theme(axis.title=element_blank(),
 
 ```{r, Table A in S1 Text, eval=T}
 #---------------------------------------------------------------------------------------------------------
-# Supplementary Table S1
+# Table A in S1 Text
 #---------------------------------------------------------------------------------------------------------
 sd.error.high <- function(x){
   mean(x)+(sd(x)/sqrt(10))
@@ -92,7 +92,7 @@ apply(tenag_brt_national_baseline_metrics,2,sd.error.low)
 
 ```{r, Table B in S1 Text, eval=T}
 #---------------------------------------------------------------------------------------------------------
-# Supplementary Table S2
+# Table B in S1 Text
 #---------------------------------------------------------------------------------------------------------
 # ##########################
 # State measures
@@ -199,7 +199,7 @@ apply(tenag_brt_national_subregion_metrics,2,sd.error.low)
 
 ```{r, Figure A in S1 Text, eval=T}
 #---------------------------------------------------------------------------------------------------------
-# Supplemental Figure 1 (covariate maps)
+# Figure A in S1 Text (covariate maps, did inefficiently one by one)
 #---------------------------------------------------------------------------------------------------------
 
 #load data
@@ -213,50 +213,38 @@ e_mg <- raster::stack(env_data_mg)
 plot(e_national[[7]])
 
 #plot prep
-min <- 2800#6.85#2800
-max <- 3050#31.85#2800
+min <- 2800
+max <- 3050
 zlim <- range(c(min,max))
 breakpoints <- round(c(seq(min, max, (max-min)/8)),0)
 colors2 <- c(RColorBrewer::brewer.pal(9, "Oranges"))[2:9]
-#par(mar = c(0, 0, 0, 0))
-#par(mfrow=c(2,3), mar = c(1,3,2,0))#, mai=c(0.05,0.05,0.05,0.05))
 def.par <- par(no.readonly = TRUE)
 layout(matrix(c(1,2,1,3),ncol=2,byrow=TRUE), widths=c(2,1), 
        heights=c(2,2))
 layout.show(n=3)
 
-plot(e_national[[2]],# main="A",  
-              main="", #ylab = "B. straminea\n",
+plot(e_national[[2]],  
+              main="", 
               axes = FALSE, box = FALSE, legend = T,
               breaks = breakpoints, col = colors2,
-              #xlab="Longitude", ylab="Latitude",
               cex.main = 2, cex.lab=2, zlim=zlim)
 legend("right",fill=rev(colors2),
        legend = rev(c("10", "13", "16", "19", "22", "26", "29", "32")))
-#title(ylab = "B. straminea\n", adj=0.5, line=-0.59, font.lab=4, cex.lab=2)
-#title("A",adj=0.01, cex.main=2)
 
-plot(e_mg[[2]],# main="A",  
-              main = "", #ylab = "B. straminea\n",
+plot(e_mg[[2]],
+              main = "", 
               axes = FALSE, box = FALSE, legend = F,
               breaks = breakpoints, col = colors2,
-              #xlab = "Longitude", ylab = "Latitude",
               cex.main = 2, cex.lab = 2, zlim = zlim)
-#title(ylab = "B. straminea\n", adj = 0.5, line = -0.59, font.lab = 4, cex.lab = 2)
-#title("B", adj = 0.01, cex.main = 2)
 
-plot(e_sp[[2]],# main="A",  
-               main = "", #ylab = "B. straminea\n",
+plot(e_sp[[2]],
+               main = "",
                axes = FALSE, box = FALSE, legend = F,
                breaks = breakpoints, col = colors2,
-               #xlab = "Longitude", ylab = "Latitude",
                cex.main = 2, cex.lab = 2, zlim = zlim)
-#title(ylab = "B. straminea\n", adj = 0.5, line = -0.59, font.lab = 4, cex.lab = 2)
-#title("C", adj = 0.01, cex.main = 2)
 
 fig1 <- grid.arrange(figS1a, figS1b, figS1c,                            
                      ncol = 6, nrow = 4, 
-                     #common.legend = TRUE, legend = "bottom",
                      layout_matrix = rbind(c(1,1,1,1,2,2), c(1,1,1,1,2,2), c(1,1,1,1,3,3), c(1,1,1,1,3,3)))
 fig1
 as_ggplot(fig1) +                                
@@ -265,10 +253,6 @@ as_ggplot(fig1) +
 ```
 
 ```{r, Figure B in S1 Text (Sensitivity), eval=T}
-#---------------------------------------------------------------------------------------------------------
-# National sensitivity, specificity, pAUC, TSS comparisons
-#---------------------------------------------------------------------------------------------------------
-
 #________________________sensitivity STRAMINEA____________________________________________________
 #build straminea national sensitivity table
 stram_national_models_sensitivity_df <- as.data.frame(cbind(stram_me_national_baseline_metrics$sensitivity, 
@@ -515,7 +499,7 @@ fig.sens.all <- as_ggplot(fig.sens.all) +
 
 fig.sens.all <- annotate_figure(fig.sens.all, left = textGrob("Sensitivity (out of sample)", rot = 90, vjust = 1, gp = gpar(cex = 1.7)))
 fig.sens.all
-ggsave("SFig2a.pdf", plot=fig.sens.all, path="~/Desktop/r&r_figures/", width=14, height=8, units="in", device = "pdf")
+ggsave("FigB_Sens.pdf", plot=fig.sens.all, path="~/Desktop/r&r_figures/", width=14, height=8, units="in", device = "pdf")
 ```
 
 ```{r, Figure B in S1 Text (Specificity), eval=T}
@@ -754,7 +738,7 @@ fig.spec.all <- as_ggplot(fig.spec.all) +
 
 fig.spec.all <- annotate_figure(fig.spec.all, left = textGrob("Specificity (out of sample)", rot = 90, vjust = 1, gp = gpar(cex = 1.7)))
 fig.spec.all
-ggsave("SFig2b.pdf", plot=fig.spec.all, path="~/Desktop/r&r_figures/", width=14, height=8, units="in", device = "pdf")
+ggsave("FigB_Spec.pdf", plot=fig.spec.all, path="~/Desktop/r&r_figures/", width=14, height=8, units="in", device = "pdf")
 ```
 
 ```{r, Figure B in S1 Text (pAUC Mean), eval=T}
@@ -1004,10 +988,11 @@ fig.pauc.all <- as_ggplot(fig.pauc.all) +
 
 fig.pauc.all <- annotate_figure(fig.pauc.all, left = textGrob("pAUC (out of sample)", rot = 90, vjust = 1, gp = gpar(cex = 1.7)))
 fig.pauc.all
-ggsave("SFig2c.pdf", plot=fig.pauc.all, path="~/Desktop/r&r_figures/", width=14, height=8, units="in", device = "pdf")
+ggsave("FigB_pAUC", plot=fig.pauc.all, path="~/Desktop/r&r_figures/", width=14, height=8, units="in", device = "pdf")
 ```
 
-```{r, Figure B in S1 Text (pAUC Sig), eval=T}
+```{r, Figure B in S1 Text* (pAUC Sig), eval=T}
+#*this does not make it's own figure, but contributes to Table 3 in the main manuscript
 #________________________pAUC STRAMINEA____________________________________________________
 #build straminea national pAUC table
 stram_national_models_pauc_pval_df <- as.data.frame(cbind(stram_me_national_baseline_metrics$pauc_pval, 
@@ -1385,10 +1370,10 @@ fig.tss.all <- as_ggplot(fig.tss.all) +
 
 fig.tss.all <- annotate_figure(fig.tss.all, left = textGrob("TSS (out of sample)", rot = 90, vjust = 1, gp = gpar(cex = 1.7)))
 fig.tss.all
-ggsave("SFig2d.pdf", plot=fig.tss.all, path="~/Desktop/r&r_figures/", width=14, height=8, units="in", device = "pdf")
+ggsave("FigB_TSS", plot=fig.tss.all, path="~/Desktop/r&r_figures/", width=14, height=8, units="in", device = "pdf")
 ```
 
-```{r, Raster Cropping, eval=T}
+```{r, Figure C in S1 Text, eval=T}
 # crop all national model iterations
 ### mg shapefile
 geo_extent_shp <- read_sf("~/Desktop/doctorate/ch1 brazil schisto/brazil_shapefiles/BR_Mesorregioes_2021/BR_Mesorregioes_2021.shp")
@@ -1399,6 +1384,102 @@ geo_extent <- st_as_sf(geo_extent_shp)
 geo_extent$x <- st_transform(geo_extent$x, 4326)
 mg_shapefile <- geo_extent
 
+cropping_function <- function(prediction_rasters_dir, model_type, out_dir, cropping_shapefile){
+  prediction_rasters_dir_prediction_rasters <- paste(prediction_rasters_dir,"/prediction_rasters",sep="")
+  prediction_rasters <- list.files(path=prediction_rasters_dir_prediction_rasters, pattern=model_type, all.files=FALSE, full.names=TRUE,recursive=TRUE)
+  prediction_rasters <- prediction_rasters[2:11] #throw out mean raster
+  for(i in 1:10){
+    masked <- mask(x = raster(prediction_rasters[i]), mask = cropping_shapefile)
+    raster_cropped <- crop(masked, cropping_shapefile)
+    out_name <- paste(prediction_rasters_dir,'/cropped_rasters/',model_type,"_cropped",i,sep="")
+    writeRaster(raster_cropped, filename=out_name, format="GTiff",options=c("INTERLEAVE=BAND","COMPRESS=LZW"), overwrite=TRUE)
+  }
+}
+
+folders <- list.dirs("~/Desktop/r&r_predictions")[-1]
+folders <- folders[c(4,11)]
+folders
+model_types <- c("rf", "brt", "maxent")
+
+for(i in 1:length(folders)){
+  for(k in 1:length(model_types)){
+    extent <- word(basename(folders[i]), 2, sep = "_")
+    cropping_function(folders[i], model_types[k], "~/Desktop/r&r_figures", mg_shapefile)
+    print(paste(model_types[k],"done",sep=" "))
+  }
+  print(paste("Folder",i,"done"))
+}
+
+#---------------------------------------------------------------------------------------------------------
+## Figure C: Minas Gerais Glabrata
+pdf("~/Desktop/r&r_figures/FigC.pdf", width=8, height=9)
+colors2 <- c(RColorBrewer::brewer.pal(9, "BuPu"))[2:9]
+par(mar = c(0, 0, 0, 0))
+par(mfrow=c(3,2), mar = c(1,3,2,0))
+
+str_name <-'~/Desktop/r&r_predictions/glabrata_mg_models/prediction_rasters/maxent_mean.tif'
+me_pred_raster1 <- brick(str_name)
+plot(me_pred_raster1[[c(1)]],  
+     main="State model",
+     axes = FALSE, box = FALSE, legend=FALSE,
+     breaks = c(seq(me_pred_raster1@data@min, me_pred_raster1@data@max, (me_pred_raster1@data@max-me_pred_raster1@data@min)/8)), col = colors2,
+     cex.main = 2, cex.lab=2, zlim=range(c(me_pred_raster1@data@min,me_pred_raster1@data@max))
+)
+title(ylab = "Maximum Entropy\n", adj=0.5, line=-0.59, cex.lab=1.8)
+title("A",adj=0.01, cex.main=1.8)
+
+str_name <-'~/Desktop/r&r_predictions/glabrata_mg_models/prediction_rasters/maxent_national_cropped.tif'
+me_pred_raster2 <- brick(str_name)
+plot(me_pred_raster2[[c(1)]],  
+     main="Cropped national model",
+     axes = FALSE, box = FALSE, legend=FALSE,
+     breaks = c(seq(me_pred_raster2@data@min, me_pred_raster2@data@max, (me_pred_raster2@data@max-me_pred_raster2@data@min)/8)), col = colors2,
+     cex.main = 2, cex.lab=2, zlim=range(c(me_pred_raster2@data@min,me_pred_raster2@data@max))
+)
+title("B",adj=0.01, cex.main=1.8)
+
+str_name <-'~/Desktop/r&r_predictions/glabrata_mg_models/prediction_rasters/rf_mean.tif'
+me_pred_raster3 <- brick(str_name)
+plot(me_pred_raster3[[c(1)]],  
+     axes = FALSE, box = FALSE, legend=FALSE,
+     breaks = c(seq(me_pred_raster3@data@min, me_pred_raster3@data@max, (me_pred_raster3@data@max-me_pred_raster3@data@min)/8)), col = colors2,
+     cex.main = 2, cex.lab=2, zlim=range(c(me_pred_raster3@data@min,me_pred_raster3@data@max))
+)
+title(ylab = "Random Forest\n", adj=0.5, line=-0.59, cex.lab=1.8)
+title("C",adj=0.01, cex.main=1.8)
+
+str_name <-'~/Desktop/r&r_predictions/glabrata_mg_models/prediction_rasters/rf_national_cropped.tif'
+rf_pred_raster1 <- brick(str_name)
+raster::plot(rf_pred_raster1[[c(1)]],  
+             axes = FALSE, box = FALSE, legend=FALSE,
+             breaks = c(seq(rf_pred_raster1@data@min, rf_pred_raster1@data@max, (rf_pred_raster1@data@max-rf_pred_raster1@data@min)/8)), col = colors2,
+             cex.main = 2, cex.lab=2, zlim=range(c(rf_pred_raster1@data@min,rf_pred_raster1@data@max))
+)
+title("D",adj=0.01, cex.main=1.8)
+
+str_name <-'~/Desktop/r&r_predictions/glabrata_mg_models/prediction_rasters/brt_mean.tif'
+rf_pred_raster2 <- brick(str_name)
+plot(rf_pred_raster2[[c(1)]],
+     axes = FALSE, box = FALSE, legend=FALSE,
+     breaks = c(seq(rf_pred_raster2@data@min, 0.45, (0.45-rf_pred_raster2@data@min)/8), rf_pred_raster2@data@max), col = colors2[c(1:8,8)],
+     cex.main = 2, cex.lab=2, zlim=range(c(rf_pred_raster2@data@min,rf_pred_raster2@data@max))
+)
+title(ylab = "Boosted Regression Tree\n", adj=0.5, line=-0.59, cex.lab=1.8)
+title("E",adj=0.01, cex.main=1.8)
+
+str_name <-'~/Desktop/r&r_predictions/glabrata_mg_models/prediction_rasters/brt_national_cropped.tif'
+rf_pred_raster3 <- brick(str_name)
+plot(rf_pred_raster3[[c(1)]],
+     axes = FALSE, box = FALSE, legend=FALSE,
+     breaks = c(seq(rf_pred_raster3@data@min, rf_pred_raster3@data@max, (rf_pred_raster3@data@max-rf_pred_raster3@data@min)/8)), col = colors2,
+     cex.main = 2, cex.lab=2, zlim=range(c(rf_pred_raster3@data@min,rf_pred_raster3@data@max))
+)
+title("F",adj=0.01, cex.main=1.8)
+dev.off()
+```
+
+```{r, Figure D in S1 Text, eval=T}
+# crop all national model iterations
 ### sp shapefile
 geo_extent_shp <- read_sf("~/Desktop/doctorate/ch1 brazil schisto/brazil_shapefiles/BR_Mesorregioes_2021/BR_Mesorregioes_2021.shp")
 subregions <- geo_extent_shp[which(geo_extent_shp$SIGLA=="SP"),] #mesoregion as subregion
@@ -1428,16 +1509,83 @@ model_types <- c("rf", "brt", "maxent")
 for(i in 1:length(folders)){
   for(k in 1:length(model_types)){
     extent <- word(basename(folders[i]), 2, sep = "_")
-    cropping_function(folders[i], model_types[k], "~/Desktop/r&r_figures", mg_shapefile)
+    cropping_function(folders[i], model_types[k], "~/Desktop/r&r_figures", sp_shapefile)
     print(paste(model_types[k],"done",sep=" "))
   }
   print(paste("Folder",i,"done"))
 }
+
+#---------------------------------------------------------------------------------------------------------
+## Figure D: São Paulo Tenagophila
+pdf("~/Desktop/r&r_figures/FigD.pdf", width=8, height=9)
+colors2 <- c(RColorBrewer::brewer.pal(9, "BuPu"))[2:9]
+par(mar = c(0, 0, 0, 0))
+par(mfrow=c(3,2), mar = c(1,3,2,0))
+
+str_name <-'~/Desktop/r&r_predictions/tenagophila_sp_models/prediction_rasters/maxent_mean.tif'
+me_pred_raster1 <- brick(str_name)
+plot(me_pred_raster1[[c(1)]],  
+     main="State model",
+     axes = FALSE, box = FALSE, legend=FALSE,
+     breaks = c(seq(me_pred_raster1@data@min, me_pred_raster1@data@max, (me_pred_raster1@data@max-me_pred_raster1@data@min)/8)), col = colors2,
+     cex.main = 2, cex.lab=2, zlim=range(c(me_pred_raster1@data@min,me_pred_raster1@data@max))
+)
+title(ylab = "Maximum Entropy\n", adj=0.5, line=-0.59, cex.lab=1.8)
+title("A",adj=0.01, cex.main=1.8)
+
+str_name <-'~/Desktop/r&r_predictions/tenagophila_sp_models/prediction_rasters/maxent_national_cropped.tif'
+me_pred_raster2 <- brick(str_name)
+plot(me_pred_raster2[[c(1)]],  
+     main="Cropped national model",
+     axes = FALSE, box = FALSE, legend=FALSE,
+     breaks = c(seq(me_pred_raster2@data@min, me_pred_raster2@data@max, (me_pred_raster2@data@max-me_pred_raster2@data@min)/8)), col = colors2,
+     cex.main = 2, cex.lab=2, zlim=range(c(me_pred_raster2@data@min,me_pred_raster2@data@max))
+)
+title("B",adj=0.01, cex.main=1.8)
+
+str_name <-'~/Desktop/r&r_predictions/tenagophila_sp_models/prediction_rasters/rf_mean.tif'
+me_pred_raster3 <- brick(str_name)
+plot(me_pred_raster3[[c(1)]],  
+     axes = FALSE, box = FALSE, legend=FALSE,
+     breaks = c(seq(me_pred_raster3@data@min, me_pred_raster3@data@max, (me_pred_raster3@data@max-me_pred_raster3@data@min)/8)), col = colors2,
+     cex.main = 2, cex.lab=2, zlim=range(c(me_pred_raster3@data@min,me_pred_raster3@data@max))
+)
+title(ylab = "Random Forest\n", adj=0.5, line=-0.59, cex.lab=1.8)
+title("C",adj=0.01, cex.main=1.8)
+
+str_name <-'~/Desktop/r&r_predictions/tenagophila_sp_models/prediction_rasters/rf_national_cropped.tif'
+rf_pred_raster1 <- brick(str_name)
+raster::plot(rf_pred_raster1[[c(1)]],  
+             axes = FALSE, box = FALSE, legend=FALSE,
+             breaks = c(seq(rf_pred_raster1@data@min, rf_pred_raster1@data@max, (rf_pred_raster1@data@max-rf_pred_raster1@data@min)/8)), col = colors2,
+             cex.main = 2, cex.lab=2, zlim=range(c(rf_pred_raster1@data@min,rf_pred_raster1@data@max))
+)
+title("D",adj=0.01, cex.main=1.8)
+
+str_name <-'~/Desktop/r&r_predictions/tenagophila_sp_models/prediction_rasters/brt_mean.tif'
+rf_pred_raster2 <- brick(str_name)
+plot(rf_pred_raster2[[c(1)]],
+     axes = FALSE, box = FALSE, legend=FALSE,
+     breaks = c(seq(rf_pred_raster2@data@min, rf_pred_raster2@data@max, (rf_pred_raster2@data@max-rf_pred_raster2@data@min)/8)), col = colors2,
+     cex.main = 2, cex.lab=2, zlim=range(c(rf_pred_raster2@data@min,rf_pred_raster2@data@max))
+)
+title(ylab = "Boosted Regression Tree\n", adj=0.5, line=-0.59, cex.lab=1.8)
+title("E",adj=0.01, cex.main=1.8)
+
+str_name <-'~/Desktop/r&r_predictions/tenagophila_sp_models/prediction_rasters/brt_national_cropped.tif'
+rf_pred_raster3 <- brick(str_name)
+plot(rf_pred_raster3[[c(1)]],
+     axes = FALSE, box = FALSE, legend=FALSE,
+     breaks = c(seq(rf_pred_raster3@data@min, rf_pred_raster3@data@max, (rf_pred_raster3@data@max-rf_pred_raster3@data@min)/8)), col = colors2,
+     cex.main = 2, cex.lab=2, zlim=range(c(rf_pred_raster3@data@min,rf_pred_raster3@data@max))
+)
+title("F",adj=0.01, cex.main=1.8)
+dev.off()
 ```
 
 ```{r, Figure E in S1 Text, eval=T}
 #---------------------------------------------------------------------------------------------------------
-# Figure 6 v2: GBIF v expert-collected data suite of maps for Sao Paulo
+# Figure E: GBIF v expert-collected data suite of maps for Sao Paulo
 # ALL RANDOMLY REDUCED TO 115 occurrence points
 #---------------------------------------------------------------------------------------------------------
 pdf("~/Desktop/r&r_figures/FigE.pdf", width=12, height=9)

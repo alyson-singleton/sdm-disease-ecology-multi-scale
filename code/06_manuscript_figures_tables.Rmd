@@ -509,9 +509,8 @@ ggsave("Fig3.pdf", plot=fig3all, path="~/Desktop/r&r_figures/", width=14, height
 
 ```{r, Table 3, eval=T}
 #---------------------------------------------------------------------------------------------------------
-# Table 3
+# Table 3 (need to run the code for Figure B in S1 text to run these lines, look in "07_supplementary_figures_tables.rmd")
 #---------------------------------------------------------------------------------------------------------
-
 glab_auc_df_summary[c(5,6,4),c(1,2,4,7,8)]
 stram_auc_df_summary[c(5,6,4),c(1,2,4,7,8)]
 tenag_auc_df_summary[c(2,3,1),c(1,2,4,7,8)]
@@ -538,6 +537,42 @@ tenag_tss_df_summary[c(2,3,1),c(1,2,4,7,8)]
 ```
 
 ```{r, Figure 4, eval=T}
+# crop all national model iterations
+### mg shapefile
+geo_extent_shp <- read_sf("~/Desktop/doctorate/ch1 brazil schisto/brazil_shapefiles/BR_Mesorregioes_2021/BR_Mesorregioes_2021.shp")
+subregions <- geo_extent_shp[which(geo_extent_shp$SIGLA=="MG"),] #mesoregion as subregion
+subregions$geometry <- st_transform(subregions$geometry, 4326)
+geo_extent_shp <- st_union(geo_extent_shp[which(geo_extent_shp$SIGLA=="MG"),])
+geo_extent <- st_as_sf(geo_extent_shp) 
+geo_extent$x <- st_transform(geo_extent$x, 4326)
+mg_shapefile <- geo_extent
+
+cropping_function <- function(prediction_rasters_dir, model_type, out_dir, cropping_shapefile){
+  prediction_rasters_dir_prediction_rasters <- paste(prediction_rasters_dir,"/prediction_rasters",sep="")
+  prediction_rasters <- list.files(path=prediction_rasters_dir_prediction_rasters, pattern=model_type, all.files=FALSE, full.names=TRUE,recursive=TRUE)
+  prediction_rasters <- prediction_rasters[2:11] #throw out mean raster
+  for(i in 1:10){
+    masked <- mask(x = raster(prediction_rasters[i]), mask = cropping_shapefile)
+    raster_cropped <- crop(masked, cropping_shapefile)
+    out_name <- paste(prediction_rasters_dir,'/cropped_rasters/',model_type,"_cropped",i,sep="")
+    writeRaster(raster_cropped, filename=out_name, format="GTiff",options=c("INTERLEAVE=BAND","COMPRESS=LZW"), overwrite=TRUE)
+  }
+}
+
+folders <- list.dirs("~/Desktop/r&r_predictions")[-1]
+folders <- folders[c(4,11)]
+folders
+model_types <- c("rf", "brt", "maxent")
+
+for(i in 1:length(folders)){
+  for(k in 1:length(model_types)){
+    extent <- word(basename(folders[i]), 2, sep = "_")
+    cropping_function(folders[i], model_types[k], "~/Desktop/r&r_figures", mg_shapefile)
+    print(paste(model_types[k],"done",sep=" "))
+  }
+  print(paste("Folder",i,"done"))
+}
+
 #---------------------------------------------------------------------------------------------------------
 # Figure 4: Scale map prediction comparison
 #---------------------------------------------------------------------------------------------------------
@@ -606,138 +641,7 @@ plot(rf_pred_raster3[[c(1)]],
 )
 title("F",adj=0.01, cex.main=1.8)
 dev.off()
-#---------------------------------------------------------------------------------------------------------
-## São Paulo Tenagophila
-pdf("~/Desktop/r&r_figures/Fig4tenag.pdf", width=8, height=9)
-colors2 <- c(RColorBrewer::brewer.pal(9, "BuPu"))[2:9]
-par(mar = c(0, 0, 0, 0))
-par(mfrow=c(3,2), mar = c(1,3,2,0))
 
-str_name <-'~/Desktop/r&r_predictions/tenagophila_sp_models/prediction_rasters/maxent_mean.tif'
-me_pred_raster1 <- brick(str_name)
-plot(me_pred_raster1[[c(1)]],  
-     main="State model",
-     axes = FALSE, box = FALSE, legend=FALSE,
-     breaks = c(seq(me_pred_raster1@data@min, me_pred_raster1@data@max, (me_pred_raster1@data@max-me_pred_raster1@data@min)/8)), col = colors2,
-     cex.main = 2, cex.lab=2, zlim=range(c(me_pred_raster1@data@min,me_pred_raster1@data@max))
-)
-title(ylab = "Maximum Entropy\n", adj=0.5, line=-0.59, cex.lab=1.8)
-title("A",adj=0.01, cex.main=1.8)
-
-str_name <-'~/Desktop/r&r_predictions/tenagophila_sp_models/prediction_rasters/maxent_national_cropped.tif'
-me_pred_raster2 <- brick(str_name)
-plot(me_pred_raster2[[c(1)]],  
-     main="Cropped national model",
-     axes = FALSE, box = FALSE, legend=FALSE,
-     breaks = c(seq(me_pred_raster2@data@min, me_pred_raster2@data@max, (me_pred_raster2@data@max-me_pred_raster2@data@min)/8)), col = colors2,
-     cex.main = 2, cex.lab=2, zlim=range(c(me_pred_raster2@data@min,me_pred_raster2@data@max))
-)
-title("B",adj=0.01, cex.main=1.8)
-
-str_name <-'~/Desktop/r&r_predictions/tenagophila_sp_models/prediction_rasters/rf_mean.tif'
-me_pred_raster3 <- brick(str_name)
-plot(me_pred_raster3[[c(1)]],  
-     axes = FALSE, box = FALSE, legend=FALSE,
-     breaks = c(seq(me_pred_raster3@data@min, me_pred_raster3@data@max, (me_pred_raster3@data@max-me_pred_raster3@data@min)/8)), col = colors2,
-     cex.main = 2, cex.lab=2, zlim=range(c(me_pred_raster3@data@min,me_pred_raster3@data@max))
-)
-title(ylab = "Random Forest\n", adj=0.5, line=-0.59, cex.lab=1.8)
-title("C",adj=0.01, cex.main=1.8)
-
-str_name <-'~/Desktop/r&r_predictions/tenagophila_sp_models/prediction_rasters/rf_national_cropped.tif'
-rf_pred_raster1 <- brick(str_name)
-raster::plot(rf_pred_raster1[[c(1)]],  
-             axes = FALSE, box = FALSE, legend=FALSE,
-             breaks = c(seq(rf_pred_raster1@data@min, rf_pred_raster1@data@max, (rf_pred_raster1@data@max-rf_pred_raster1@data@min)/8)), col = colors2,
-             cex.main = 2, cex.lab=2, zlim=range(c(rf_pred_raster1@data@min,rf_pred_raster1@data@max))
-)
-title("D",adj=0.01, cex.main=1.8)
-
-str_name <-'~/Desktop/r&r_predictions/tenagophila_sp_models/prediction_rasters/brt_mean.tif'
-rf_pred_raster2 <- brick(str_name)
-plot(rf_pred_raster2[[c(1)]],
-     axes = FALSE, box = FALSE, legend=FALSE,
-     breaks = c(seq(rf_pred_raster2@data@min, rf_pred_raster2@data@max, (rf_pred_raster2@data@max-rf_pred_raster2@data@min)/8)), col = colors2,
-     cex.main = 2, cex.lab=2, zlim=range(c(rf_pred_raster2@data@min,rf_pred_raster2@data@max))
-)
-title(ylab = "Boosted Regression Tree\n", adj=0.5, line=-0.59, cex.lab=1.8)
-title("E",adj=0.01, cex.main=1.8)
-
-str_name <-'~/Desktop/r&r_predictions/tenagophila_sp_models/prediction_rasters/brt_national_cropped.tif'
-rf_pred_raster3 <- brick(str_name)
-plot(rf_pred_raster3[[c(1)]],
-     axes = FALSE, box = FALSE, legend=FALSE,
-     breaks = c(seq(rf_pred_raster3@data@min, rf_pred_raster3@data@max, (rf_pred_raster3@data@max-rf_pred_raster3@data@min)/8)), col = colors2,
-     cex.main = 2, cex.lab=2, zlim=range(c(rf_pred_raster3@data@min,rf_pred_raster3@data@max))
-)
-title("F",adj=0.01, cex.main=1.8)
-dev.off()
-#---------------------------------------------------------------------------------------------------------
-## Minas Gerais Glabrata
-pdf("~/Desktop/r&r_figures/Fig4glab.pdf", width=8, height=9)
-colors2 <- c(RColorBrewer::brewer.pal(9, "BuPu"))[2:9]
-par(mar = c(0, 0, 0, 0))
-par(mfrow=c(3,2), mar = c(1,3,2,0))
-
-str_name <-'~/Desktop/r&r_predictions/glabrata_mg_models/prediction_rasters/maxent_mean.tif'
-me_pred_raster1 <- brick(str_name)
-plot(me_pred_raster1[[c(1)]],  
-     main="State model",
-     axes = FALSE, box = FALSE, legend=FALSE,
-     breaks = c(seq(me_pred_raster1@data@min, me_pred_raster1@data@max, (me_pred_raster1@data@max-me_pred_raster1@data@min)/8)), col = colors2,
-     cex.main = 2, cex.lab=2, zlim=range(c(me_pred_raster1@data@min,me_pred_raster1@data@max))
-)
-title(ylab = "Maximum Entropy\n", adj=0.5, line=-0.59, cex.lab=1.8)
-title("A",adj=0.01, cex.main=1.8)
-
-str_name <-'~/Desktop/r&r_predictions/glabrata_mg_models/prediction_rasters/maxent_national_cropped.tif'
-me_pred_raster2 <- brick(str_name)
-plot(me_pred_raster2[[c(1)]],  
-     main="Cropped national model",
-     axes = FALSE, box = FALSE, legend=FALSE,
-     breaks = c(seq(me_pred_raster2@data@min, me_pred_raster2@data@max, (me_pred_raster2@data@max-me_pred_raster2@data@min)/8)), col = colors2,
-     cex.main = 2, cex.lab=2, zlim=range(c(me_pred_raster2@data@min,me_pred_raster2@data@max))
-)
-title("B",adj=0.01, cex.main=1.8)
-
-str_name <-'~/Desktop/r&r_predictions/glabrata_mg_models/prediction_rasters/rf_mean.tif'
-me_pred_raster3 <- brick(str_name)
-plot(me_pred_raster3[[c(1)]],  
-     axes = FALSE, box = FALSE, legend=FALSE,
-     breaks = c(seq(me_pred_raster3@data@min, me_pred_raster3@data@max, (me_pred_raster3@data@max-me_pred_raster3@data@min)/8)), col = colors2,
-     cex.main = 2, cex.lab=2, zlim=range(c(me_pred_raster3@data@min,me_pred_raster3@data@max))
-)
-title(ylab = "Random Forest\n", adj=0.5, line=-0.59, cex.lab=1.8)
-title("C",adj=0.01, cex.main=1.8)
-
-str_name <-'~/Desktop/r&r_predictions/glabrata_mg_models/prediction_rasters/rf_national_cropped.tif'
-rf_pred_raster1 <- brick(str_name)
-raster::plot(rf_pred_raster1[[c(1)]],  
-             axes = FALSE, box = FALSE, legend=FALSE,
-             breaks = c(seq(rf_pred_raster1@data@min, rf_pred_raster1@data@max, (rf_pred_raster1@data@max-rf_pred_raster1@data@min)/8)), col = colors2,
-             cex.main = 2, cex.lab=2, zlim=range(c(rf_pred_raster1@data@min,rf_pred_raster1@data@max))
-)
-title("D",adj=0.01, cex.main=1.8)
-
-str_name <-'~/Desktop/r&r_predictions/glabrata_mg_models/prediction_rasters/brt_mean.tif'
-rf_pred_raster2 <- brick(str_name)
-plot(rf_pred_raster2[[c(1)]],
-     axes = FALSE, box = FALSE, legend=FALSE,
-     breaks = c(seq(rf_pred_raster2@data@min, 0.45, (0.45-rf_pred_raster2@data@min)/8), rf_pred_raster2@data@max), col = colors2[c(1:8,8)],
-     cex.main = 2, cex.lab=2, zlim=range(c(rf_pred_raster2@data@min,rf_pred_raster2@data@max))
-)
-title(ylab = "Boosted Regression Tree\n", adj=0.5, line=-0.59, cex.lab=1.8)
-title("E",adj=0.01, cex.main=1.8)
-
-str_name <-'~/Desktop/r&r_predictions/glabrata_mg_models/prediction_rasters/brt_national_cropped.tif'
-rf_pred_raster3 <- brick(str_name)
-plot(rf_pred_raster3[[c(1)]],
-     axes = FALSE, box = FALSE, legend=FALSE,
-     breaks = c(seq(rf_pred_raster3@data@min, rf_pred_raster3@data@max, (rf_pred_raster3@data@max-rf_pred_raster3@data@min)/8)), col = colors2,
-     cex.main = 2, cex.lab=2, zlim=range(c(rf_pred_raster3@data@min,rf_pred_raster3@data@max))
-)
-title("F",adj=0.01, cex.main=1.8)
-dev.off()
 ```
 
 ```{r, Table 4, eval=T}
