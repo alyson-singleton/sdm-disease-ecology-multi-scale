@@ -645,6 +645,24 @@ dev.off()
 ```
 
 ```{r, Table 4, eval=T}
+### mg shapefile
+geo_extent_shp <- read_sf("~/Desktop/doctorate/ch1 brazil schisto/brazil_shapefiles/BR_Mesorregioes_2021/BR_Mesorregioes_2021.shp")
+subregions <- geo_extent_shp[which(geo_extent_shp$SIGLA=="MG"),] #mesoregion as subregion
+subregions$geometry <- st_transform(subregions$geometry, 4326)
+geo_extent_shp <- st_union(geo_extent_shp[which(geo_extent_shp$SIGLA=="MG"),])
+geo_extent <- st_as_sf(geo_extent_shp) 
+geo_extent$x <- st_transform(geo_extent$x, 4326)
+mg_shapefile <- geo_extent
+
+### sp shapefile
+geo_extent_shp <- read_sf("~/Desktop/doctorate/ch1 brazil schisto/brazil_shapefiles/BR_Mesorregioes_2021/BR_Mesorregioes_2021.shp")
+subregions <- geo_extent_shp[which(geo_extent_shp$SIGLA=="SP"),] #mesoregion as subregion
+subregions$geometry <- st_transform(subregions$geometry, 4326)
+geo_extent_shp <- st_union(geo_extent_shp[which(geo_extent_shp$SIGLA=="SP"),])
+geo_extent <- st_as_sf(geo_extent_shp) 
+geo_extent$x <- st_transform(geo_extent$x, 4326)
+sp_shapefile <- geo_extent
+
 correlation_function <- function(rasters_dir1, rasters_dir2, model_type){
   cor_df <- c()
   cropped_rasters <- paste(rasters_dir1,"cropped_rasters",sep="")
@@ -656,7 +674,7 @@ correlation_function <- function(rasters_dir1, rasters_dir2, model_type){
     for(i in 1:10){
     set.seed(ii)
     state_raster <- raster(state_rasters[i])
-    state_raster_masked <- mask(x = state_raster, mask = sp_shapefile) #change shapefile!
+    state_raster_masked <- mask(x = state_raster, mask = sp_shapefile) #change shapefile to corresponding species. options: mg_shapefile, sp_shapefile
     state_raster_cropped <- crop(state_raster_masked, sp_shapefile)
     cor <- cor(sample(values(raster(cropped_rasters[i]))),
                sample(values(state_raster_cropped)),
@@ -751,37 +769,6 @@ ci.low(tenag_brt_corr[,2])
 tenag_brt_corr_perms <- as.data.frame(read.csv("~/Desktop/table4/tena_rf_corr_permutations.csv"))
 table((tenag_brt_corr[,2]) > tenag_brt_corr_perms[c(1:1000),2])
 t.test(tenag_brt_corr[,2], tenag_brt_corr_perms[c(1:1000),2])
-
-#permutation based p-value
-# Generating data
-set.seed(2021)
-d <- as.data.frame(cbind(rnorm(1:20, 500, 50), c(rep(0, 10), rep(1, 10))))
-treatment <- d$V2
-outcome <- d$V1
-
-#Difference in means
-original <- diff(tapply(outcome, treatment, mean))
-mean(outcome[treatment==1])-mean(outcome[treatment==0])
-
-#Permutation test
-permutation.test <- function(treatment, outcome, n){
-  distribution=c()
-  result=0
-  for(i in 1:n){
-    distribution[i]=diff(by(outcome, sample(treatment, length(treatment), FALSE), mean))
-  }
-  result=sum(abs(distribution) >= abs(original))/(n)
-  return(list(result, distribution))
-}
-
-test1 <- permutation.test(treatment, outcome, 10000)
-hist(test1[[2]], breaks=50, col='grey', main="Permutation Distribution", las=1, xlab='')
-abline(v=original, lwd=3, col="red")
-
-test1[[1]]
-
-#Compare to t-test
-t.test(outcome~treatment)
 ```
 
 ```{r, Figure 5, eval=T}
