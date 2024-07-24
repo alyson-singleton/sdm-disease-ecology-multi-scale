@@ -15,4 +15,5 @@ __Code__:
 * _01_preprocessing_species_data.R_: Script used to create _preprocessed_datasets_ above. Posted for reproducibility. Recommend to just use the _preprocessed_datasets_ in the _data_ folder, rather than recreate from scratch.
 * _02_maxent_function.R_, _03_rf_function.R_, and _04_brt_function.R_: Main functions used to evaluate model performance (i.e., using spatial cross-validation), create partial dependence plots, and calculate variable importance.
 * _05_prediction_bootstrapping.R_: Bootstrapping analysis to produce prediction maps (i.e., random 80/20 splits).
-* _06_manuscript_figures.Rmd_: Rmd file including code for constructing all figures, tables, and supplementary information.
+* _06_manuscript_figures_tables.Rmd_: Rmd file including code for constructing all figures and tables in the main manuscript.
+* _07_supplementary_figures_tables.Rmd_: Rmd file including code for constructing all figures and tables in the supplementary information (S1_text).
