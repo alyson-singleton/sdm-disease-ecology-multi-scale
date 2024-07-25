@@ -225,6 +225,7 @@ random_forest_function <- function(data, out_dir, no_iter, split_ratio){
   write.csv(oob_list, paste0(out_dir, "/rf_oob_cropped.csv"))
   write.csv(metrics_subregion_df_iter, paste0(out_dir, "/rf_subregion_metrics_cropped.csv"))
 }
+
 brt_function <- function(data, out_dir, no_iter, split_ratio){
   library(enmSdmX)
   library(randomForest)
@@ -462,6 +463,7 @@ brt_function <- function(data, out_dir, no_iter, split_ratio){
   write.csv(oob_list, paste0(out_dir, "/brt_oob_cropped.csv"))
   write.csv(metrics_subregion_df_iter, paste0(out_dir, "/brt_subregion_metrics_cropped.csv"))
 }
+
 maxent_function <- function(data, out_dir, no_iter, split_ratio){
   library(enmSdmX)
   library(randomForest)
