@@ -1,5 +1,5 @@
 # sdm-disease-ecology-multi-scale
-> Code for: _Species distribution modeling for disease ecology: a multi-scale case study for schistosomiasis host snails in Brazil._ 2024. Singleton, A. L., Glidden, C. K., Chamberlin, A. J., Tuan, R., Palasio, R. G. S., Pinter A., Caldeira, R. L., Mendonça C. L. F., Carvalho O. S., Monteiro, M. V., Athni, T. S., Sokolow S. H., Mordecai, E. A., De Leo, G. A. PLoS Global Public Health. Code written by Alyson Singleton and Caroline Glidden.
+> Code for: [_Species distribution modeling for disease ecology: a multi-scale case study for schistosomiasis host snails in Brazil._](https://journals.plos.org/globalpublichealth/article?id=10.1371/journal.pgph.0002224) 2024. Singleton, A. L., Glidden, C. K., Chamberlin, A. J., Tuan, R., Palasio, R. G. S., Pinter A., Caldeira, R. L., Mendonça C. L. F., Carvalho O. S., Monteiro, M. V., Athni, T. S., Sokolow S. H., Mordecai, E. A., De Leo, G. A. PLOS Global Public Health. Code written by Alyson Singleton and Caroline Glidden.
 >
 > Please feel free to email me with any specific, code-related questions at asinglet@stanford.edu.
 
