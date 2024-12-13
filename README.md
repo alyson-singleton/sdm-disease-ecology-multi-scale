@@ -6,7 +6,7 @@
 __Data__:
 * _full_dataset.rds_: All presence and background species data, including coordinates, source, species, subregion, and all covariates used in this analysis. Includes both expert-collected and GBIF data (designated by the "source" column):
   1. Expert-collected snail data set, including coordinates, source, and species (_Biomphalaria_ and many others). Compiled from the Coleção de Malacologia Médica, Fundação Oswaldo Cruz (CMM-Fiocruz) and the Coordination for Disease Control of the State Health Secretariat of São Paulo (CCD-SP).
-  2. GBIF snail data set, including coordinates, source, and species (_Biomphalaria_ and all others reported in the expert-collected dataset). Collection methods detailed in the manuscript.
+  2. GBIF snail data set, including coordinates, source, and species (_Biomphalaria_, all species reported in the expert-collected dataset, and all freshwater animals found in South America, as defined by the International Union for Conservation of Nature). Collection methods detailed in the manuscript.
 * _preprocessed_datasets_: Subsets of the full dataset including presence and background data for each scale and species investigated in this analysis. These datasets have already been thinned and are ready as model input.
   * _mg_: Minas Gerais, _sp_: São Paulo, _limited_: presence points randomly reduced to match the number of total GBIF points for B. tenagophila in São Paulo (Fig E in S1 text).
 * _mapping_datasets_: Datasets used to create Fig 1 maps.
